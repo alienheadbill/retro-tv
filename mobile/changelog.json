@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-10-25",
+    "title": "Backup copies",
+    "changes": [
+      "If a show from your PC won't play and the PC has another copy of that episode, the TV plays the other copy instead of a stand-in"
+    ]
+  },
+  {
+    "date": "2026-10-25",
     "title": "Number pad fix",
     "changes": [
       "The 0 is back: the number pad is now two rows (1-5, 6-0) that fit on the screen",
