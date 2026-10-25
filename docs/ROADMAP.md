@@ -17,8 +17,8 @@ milestones in order. Each milestone is small, tested on its own, and leaves the 
 | YouTube playlists/channels as scheduled channels, live streams, framing crop, dedupe, English filter | Working, tested | `lib/youtube-channels.js`, `lib/framing.js` |
 | Linked folders on other drives, home server, internet sharing | Working, tested (not yet run on the laptop) | `lib/linked.js`, `lib/home-server.js`, `lib/funnel.js` |
 | Phone app sharing the same schedule, profiles and health code | Working | `mobile/`, `scripts/build-mobile.js` |
-| Episode catalog (shows, seasons, episodes, sources) | Missing | |
-| Missing-episode tracking, external metadata (TVmaze/TMDB) | Missing | |
+| Episode catalog: have / missing / twice per show, from TVmaze, with corrections | New, tested (first slice) | `lib/catalog.js`, `lib/episode-match.js`, `lib/sources/tvmaze.js` |
+| Catalog sources, alternates for recovery, TMDB | Missing | |
 | Era/year mode, historical schedules, provenance | Missing | |
 | Era-aware commercials and bumpers | Missing (breaks are random from a pool) | |
 | Playback loudness levelling | Only when converting a file | |
@@ -90,6 +90,23 @@ end to end in a phone-sized browser with the same missing-episode scenario and i
   which are measured in the background, and live sites are too heavy to preload.
 
 ## Milestone 4: episode catalog (Phase 2)
+
+**First slice done (October 2026).** `tests/catalog.test.js` covers the matcher and the
+have/missing/twice report against a stand-in TVmaze. The Shows tab was checked in a browser
+against the real TVmaze with sample file names (Dexter's Laboratory, Ed Edd n Eddy, Rugrats,
+Bakugan, a full broadcast, unknown files), including a "Not an episode" correction. It hasn't
+been run on the real library yet.
+
+- `lib/episode-match.js`: show, season, episode and title from file names, with confidence.
+- `lib/sources/tvmaze.js`: TVmaze search and episode lists, kept a week (a month for ended shows),
+  and paced requests.
+- `lib/catalog.js`: have, missing, twice and not placed per show, plus complete broadcasts and
+  files with no show name. Corrections are kept in `media/.retrotv/catalog.json`.
+- Library: a **Shows** tab with a per-season episode grid, missing and doubled-up lists,
+  "Find the right show", and "Put here" / "Not an episode" for files it couldn't place.
+- Storage stays JSON for now. Checking for `node:sqlite` in Electron 45 is still to do.
+
+The plan:
 
 - Storage: evaluate Node's built-in `node:sqlite` against Electron 45's Node version. Fall back to
   the existing JSON index if it isn't available, rather than adding a native module.

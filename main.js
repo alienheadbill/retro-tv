@@ -12,6 +12,8 @@ const { YouTubeChannels } = require('./lib/youtube-channels');
 const { HomeServer } = require('./lib/home-server');
 const funnel = require('./lib/funnel');
 const channelChecks = require('./lib/channel-checks');
+const { Catalog } = require('./lib/catalog');
+const { TVmaze } = require('./lib/sources/tvmaze');
 const { describe: describeFolder, showFor, LinkedProbes } = require('./lib/linked');
 const { safeName, isVideo, IMPORT_EXT } = require('./lib/paths');
 const sources = require('./lib/sources');
@@ -39,6 +41,7 @@ let converter = null;
 let youtube = null;
 let home = null;
 let linkedProbes = null;
+let catalog = null;
 
 async function readConfig() {
   const raw = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
@@ -125,6 +128,10 @@ function openLibrary() {
   if (library && library.root === MEDIA_DIR) return;
   library = new Library(MEDIA_DIR);
   youtube = new YouTubeChannels(path.join(MEDIA_DIR, '.retrotv', 'youtube.json'));
+  catalog = new Catalog({
+    file: path.join(MEDIA_DIR, '.retrotv', 'catalog.json'),
+    tvmaze: new TVmaze({ cacheFile: path.join(MEDIA_DIR, '.retrotv', 'tvmaze.json') }),
+  });
   downloads = new DownloadManager({
     root: MEDIA_DIR,
     stateFile: path.join(MEDIA_DIR, '.retrotv', 'downloads.json'),
@@ -833,6 +840,45 @@ function healthView() {
     });
   return { checkedAt: lastChecks.at, checking: !!checking, reportedAt: tvHealth && tvHealth.at, channels, aired: (tvHealth && tvHealth.aired) || [] };
 }
+
+// ---------- Episode catalog (Library, Shows tab) ----------
+
+// Every show video: the library's files (not bumpers or commercials) and the linked drives'.
+function catalogFiles() {
+  const out = [];
+  for (const e of library.list()) {
+    const m = e.meta || {};
+    if (e.missing || !isVideo(e.path) || m.role === 'bumper' || m.role === 'commercial') continue;
+    out.push({ key: 'lib:' + e.path, name: e.path, show: m.show || '', size: e.size, dur: e.probe && e.probe.duration, height: e.probe && e.probe.height });
+  }
+  for (const l of (readSettingsFile().settings || {}).linkedFolders || []) {
+    if (!l || !fs.existsSync(l.path)) continue;
+    for (const v of linkedVideos(l)) out.push({ key: v.key, name: fileURLToPath(v.url), show: v.show || '', dur: v.dur || null });
+  }
+  return out;
+}
+
+let lastCatalog = null;
+let cataloguing = null;
+libHandle('lib:catalog', async (action, arg) => {
+  if (!config) config = await readConfig();
+  if (action === 'build') {
+    if (!cataloguing) {
+      cataloguing = catalog
+        .build(catalogFiles(), { onProgress: (done, total) => toManager('catalog', { done, total }) })
+        .then((r) => (lastCatalog = { ...r, at: Date.now() }))
+        .finally(() => (cataloguing = null));
+    }
+    await cataloguing;
+  } else if (action === 'search') {
+    return { results: await catalog.tvmaze.search(String(arg || '')) };
+  } else if (action === 'set-show') {
+    catalog.setShow(arg.name, arg.id);
+  } else if (action === 'set-file') {
+    catalog.setFile(arg.key, arg.fix || null);
+  }
+  return lastCatalog;
+});
 
 libHandle('lib:health', async (action, arg) => {
   if (!config) config = await readConfig();

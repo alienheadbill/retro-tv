@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-10-25",
+    "title": "Number pad fix",
+    "changes": [
+      "The 0 is back: the number pad is now two rows (1-5, 6-0) that fit on the screen",
+      "Sideways, the remote shows the number pad too"
+    ]
+  },
+  {
+    "date": "2026-10-25",
     "title": "Easier reporting and adding",
     "changes": [
       "REPORT is on the remote, and Report is at the top of the menu",

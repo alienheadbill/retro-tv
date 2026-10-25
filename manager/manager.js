@@ -76,6 +76,7 @@ document.querySelectorAll('nav button').forEach((b) =>
     if (b.dataset.tab === 'home') loadHome();
     if (b.dataset.tab === 'drives') loadDrives();
     if (b.dataset.tab === 'health') loadHealth();
+    if (b.dataset.tab === 'shows') loadCatalog();
   })
 );
 
@@ -684,6 +685,103 @@ $('#new-channel').addEventListener('submit', async (e) => {
   }
 });
 
+// ---------- Shows (the episode catalog) ----------
+
+let cat = null; // { shows, broadcasts, unsorted, at }
+let catOpen = null; // the show whose details are open (its key)
+let catProgress = '';
+
+async function loadCatalog(action, arg) {
+  const r = await attempt(() => L.catalog(action || 'get', arg));
+  if (r && r.shows) cat = r;
+  renderCatalog();
+  return r;
+}
+
+const epLabel = (e) => `S${String(e.season).padStart(2, '0')}E${String(e.number).padStart(2, '0')}`;
+const fileLine = (f) => [f.name, f.height ? `${f.height}p` : '', fmtBytes(f.size), fmtDur(f.dur)].filter(Boolean).join(' · ');
+
+function renderCatalog() {
+  const box = $('#shows');
+  const build = async () => {
+    catProgress = 'Looking at your files...';
+    renderCatalog();
+    await loadCatalog('build');
+    catProgress = '';
+    renderCatalog();
+  };
+  const head = h('div', { class: 'bar' },
+    h('button', { class: 'primary', onclick: build }, cat ? 'Look again' : 'Look up my shows'),
+    h('span', { class: 'muted' }, catProgress || (cat ? `${cat.shows.length} shows, looked up ${new Date(cat.at).toLocaleString()}` : '')));
+  const intro = h('p', { class: 'muted' }, 'Matches the videos in your library and linked drives to each show\'s real episode list (from TVmaze), so you can see which episodes you have, which are missing, and which you have twice. It goes by the file names (S02E04, 2x04, "Season 1 Episode 3", "Episode 12", or the episode\'s title). Nothing is moved, renamed or deleted.');
+  if (!cat) return box.replaceChildren(head, intro);
+
+  const rows = cat.shows.map((s) => {
+    const pct = s.total ? Math.round((s.have / s.total) * 100) : null;
+    return h('tr', null,
+      h('td', null, h('b', null, s.name), s.tvmaze ? h('div', { class: 'temp' }, [s.tvmaze.premiered && s.tvmaze.premiered.slice(0, 4), s.tvmaze.network].filter(Boolean).join(' · '), s.guess ? h('span', { class: 'err' }, '  best guess: check it') : null) : h('div', { class: 'temp' }, s.error ? `Couldn't look it up: ${s.error}` : 'Not found on TVmaze')),
+      h('td', { class: 'num' }, s.total ? `${s.have} of ${s.total}${pct != null ? ` (${pct}%)` : ''}` : `${s.files} files`),
+      h('td', { class: 'num' }, s.total ? String(s.missing) : ''),
+      h('td', { class: 'num' }, s.duplicates.length ? String(s.duplicates.length) : ''),
+      h('td', { class: 'num' }, s.unmatched.length ? String(s.unmatched.length) : ''),
+      h('td', null, h('button', { class: 'small', onclick: () => { catOpen = catOpen === s.key ? null : s.key; renderCatalog(); } }, catOpen === s.key ? 'Hide' : 'Details')));
+  });
+  const open = cat.shows.find((s) => s.key === catOpen);
+  box.replaceChildren(...[
+    head,
+    intro,
+    cat.shows.length
+      ? h('table', null, h('thead', null, h('tr', null, ['Show', 'Episodes you have', 'Missing', 'Twice', 'Not placed', ''].map((t) => h('th', null, t)))), h('tbody', null, rows))
+      : h('p', { class: 'muted' }, 'No show videos found in the library or linked drives yet.'),
+    open ? showDetails(open) : null,
+    cat.broadcasts.length ? h('div', { class: 'panel' }, h('h3', null, `Complete broadcasts (${cat.broadcasts.length})`), h('p', { class: 'muted' }, 'Recordings of TV as it aired, kept apart from single episodes.'), h('ul', null, cat.broadcasts.map((f) => h('li', null, fileLine(f))))) : null,
+    cat.unsorted.length ? h('div', { class: 'panel' }, h('h3', null, `Files with no show name (${cat.unsorted.length})`), h('p', { class: 'muted' }, 'Put them in a folder named after the show, or rename them like "Show Name S01E02".'), h('ul', null, cat.unsorted.slice(0, 200).map((f) => h('li', null, fileLine(f))))) : null,
+  ].filter(Boolean));
+}
+
+function showDetails(s) {
+  const panel = h('div', { class: 'panel' }, h('h3', null, s.name));
+  // Wrong show? Search TVmaze and pick the right one (or say it isn't there).
+  const q = h('input', { value: s.name, placeholder: 'Show name' });
+  const found = h('div', null);
+  const search = async () => {
+    const r = await attempt(() => L.catalog('search', q.value));
+    if (!r) return;
+    found.replaceChildren(...r.results.slice(0, 8).map((x) => h('div', { class: 'row' },
+      h('button', { class: 'small', onclick: async () => { await loadCatalog('set-show', { name: s.key, id: x.id }); toast('Saved. Look again to update the list.'); } }, 'This one'),
+      h('span', null, `${x.name}${x.premiered ? ` (${x.premiered.slice(0, 4)})` : ''}${x.network ? ` · ${x.network}` : ''}`))),
+      h('div', { class: 'row' }, h('button', { class: 'small', onclick: async () => { await loadCatalog('set-show', { name: s.key, id: null }); toast('Saved: not on TVmaze.'); } }, "It's not on TVmaze")));
+  };
+  panel.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, s.tvmaze ? `Matched to ${s.tvmaze.name} on TVmaze.` : 'Not matched.'), q, h('button', { class: 'small', onclick: search }, 'Find the right show')), found);
+
+  for (const season of s.seasons) {
+    panel.append(h('div', null,
+      h('b', null, `Season ${season.season}: ${season.have} of ${season.total}`),
+      h('div', { class: 'eps' }, season.episodes.map((e) => h('span', { class: 'ep ' + (e.files.length ? (e.files.length > 1 ? 'two' : 'have') : 'miss'), title: `${epLabel(e)} ${e.name}${e.airdate ? ` (${e.airdate})` : ''}${e.files.length ? `\n${e.files.map((f) => f.name).join('\n')}` : '\nMissing'}` }, String(e.number))))));
+  }
+  const missing = s.seasons.flatMap((x) => x.episodes.filter((e) => !e.files.length));
+  if (missing.length) panel.append(h('details', null, h('summary', null, `Missing episodes (${missing.length})`), h('ul', null, missing.map((e) => h('li', null, `${epLabel(e)} ${e.name}${e.airdate ? ` · aired ${e.airdate}` : ''}`)))));
+  if (s.duplicates.length) {
+    panel.append(h('details', { open: true }, h('summary', null, `Episodes you have twice (${s.duplicates.length})`), h('p', { class: 'muted' }, 'Kept as they are: one may be an original broadcast and another a clean copy.'),
+      h('ul', null, s.duplicates.map((d) => h('li', null, `${epLabel(d)} ${d.name}`, h('ul', null, d.files.map((f) => h('li', { class: 'muted' }, fileLine(f)))))))));
+  }
+  if (s.unmatched.length) {
+    panel.append(h('details', { open: true }, h('summary', null, `Files it couldn't place (${s.unmatched.length})`),
+      h('ul', null, s.unmatched.map((f) => {
+        const se = h('input', { type: 'number', min: 0, placeholder: 'Season', style: 'width:80px' });
+        const ep = h('input', { type: 'number', min: 1, placeholder: 'Episode', style: 'width:80px' });
+        return h('li', null, fileLine(f), ' ', se, ep,
+          h('button', { class: 'small', onclick: async () => {
+            if (!se.value || !ep.value) return toast('Fill in the season and episode', true);
+            await loadCatalog('set-file', { key: f.key, fix: { show: s.name, season: Number(se.value), episode: Number(ep.value) } });
+            toast('Saved. Look again to update the list.');
+          } }, 'Put here'),
+          h('button', { class: 'small', onclick: async () => { await loadCatalog('set-file', { key: f.key, fix: { ignore: true } }); toast('Left out of the catalog.'); } }, 'Not an episode'));
+      }))));
+  }
+  return panel;
+}
+
 // ---------- Channel health ----------
 
 let healthData = null;
@@ -1046,6 +1144,9 @@ L.onEvent(({ type, data }) => {
     state.conversions.set(data.id, data);
     renderConversions();
     if (data.status === 'done') refresh();
+  } else if (type === 'catalog') {
+    catProgress = `Looking up shows on TVmaze: ${data.done} of ${data.total}`;
+    if ($('#tab-shows').classList.contains('on')) renderCatalog();
   } else if (type === 'health') {
     healthData = data;
     if ($('#tab-health').classList.contains('on')) renderHealth();

@@ -25,5 +25,6 @@ contextBridge.exposeInMainWorld('library', {
   home: call('lib:home'),
   linked: call('lib:linked'),
   health: call('lib:health'),
+  catalog: call('lib:catalog'),
   onEvent: (cb) => ipcRenderer.on('lib:event', (_e, msg) => cb(msg)),
 });
