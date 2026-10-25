@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-10-24",
+    "title": "Turning the phone fixed",
+    "changes": [
+      "Flipping between sideways and upright keeps the picture the right size and in place",
+      "Opening the guide no longer nudges the picture"
+    ]
+  },
+  {
+    "date": "2026-10-24",
     "title": "Same TV everywhere",
     "changes": [
       "The phone and the PC now run the same TV, so they behave the same",
