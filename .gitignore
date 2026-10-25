@@ -1,0 +1,13 @@
+# Downloaded by "npm install"
+node_modules/
+# Made by the build and publish scripts
+dist-mobile/
+.deploy/
+RetroTV-setup.zip
+# Your media stays on your drives. Only each channel's settings (channel.json) are kept.
+media/*
+!media/channels/
+media/channels/*/*
+!media/channels/*/channel.json
+# This computer's own tool settings
+.claude/

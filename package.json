@@ -1,0 +1,18 @@
+{
+  "name": "retro-tv",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A 2000s cable TV for the second monitor: live channels, channel surfing, a guide, bumpers and ads.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "electron . --server",
+    "pack": "node scripts/pack.js",
+    "test": "node --test \"tests/*.test.js\"",
+    "build:mobile": "node scripts/build-mobile.js",
+    "serve:mobile": "node scripts/serve-mobile.js"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0"
+  }
+}

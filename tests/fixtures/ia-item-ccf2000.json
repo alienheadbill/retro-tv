@@ -1,0 +1,202 @@
+{
+ "metadata": {
+  "identifier": "CCF-2000",
+  "collection": [
+   "vhskids",
+   "vhsvault"
+  ],
+  "date": "2000-01-24",
+  "description": "<div>A 2000 airing of Cartoon Network's Cartoon Cartoon Friday's Block, featuring bumpers and commercials.</div><div><br /></div><div>Episodes Included in Order:</div>Johnny Bravo: \"Hunted!\"<div>Cow and Chicken: \"A Couple of Skating Fools\"\u00a0</div><div>Dexter's Laboratory: \"My Favorite Martian\"</div><div>Johnny Bravo: \"Dental Hijinks\"</div><div>Johnny Bravo: \"Little Red Riding Johnny\"</div><div>Johnny Bravo: \"Pouch Potato\"</div><div>Dexter's Laboratory: \"Sister's Got a Brand New Bag\"<br /></div><div>Dexter's Laboratory: \"Shoo-Shee Gnomes\"<br /></div><div>Dexter's Laboratory: \"Lab of the Lost\"<br /></div><div>The Powerpuff Girls: \"A Very Special Blossom\"</div><div>The Powerpuff Girls: \"Daylight Savings\"<br /></div><div>Mike, Lu and Og: \"Nobody's Nose\"</div><div>Mike, Lu and Og: \"Scuba Doobie Doo\"<br /></div><div>Sheep in the Big City: \"To Bleat or Not to Bleat\"</div><div>Courage the Cowardly Dog: \"The Hunchback of Nowhere\"</div><div>Courage the Cowardly Dog: \"The Gods Must Be Goosey\"<br /></div><div>Ed, Edd n Eddy: \"Urban Ed\"</div><div>Ed, Edd n Eddy: \"Stop, Look and Ed\"<br /></div><div><br /></div><div>All footage included belongs to its original owners, and has been uploaded to preserve the TV broadcasts.<br /></div>",
+  "title": "VHS Recording - Cartoon Network's Cartoon Cartoon Fridays 2000 Full Broadcast"
+ },
+ "files": [
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VIDEO_TS.IFO",
+   "source": "original",
+   "mtime": "1585245592",
+   "size": "12288",
+   "md5": "6699e5653b10927753c479254492c2ea",
+   "crc32": "4cf4d45b",
+   "sha1": "80a00d657b185c0db7328dc06fb29540f65e84ba",
+   "format": "DVD Info"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VIDEO_TS.VOB",
+   "source": "original",
+   "mtime": "1585245599",
+   "size": "20480",
+   "md5": "728ee8a27ba9c859952cac60701d23b1",
+   "crc32": "4f20fa7b",
+   "sha1": "2f89417a5471a806c9f6f860b497a63d508c76a7",
+   "format": "MPEG2",
+   "length": "0.07",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VIDEO_TS.mp4",
+   "source": "derivative",
+   "format": "h.264",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VIDEO_TS.VOB",
+   "mtime": "1585254250",
+   "size": "3457",
+   "md5": "e8e4ccb60f0875012d5c450c638c10e7",
+   "crc32": "0c7f0da9",
+   "sha1": "a2ab2da3932e8f7116f002c0d444cc94dc25307e",
+   "length": "0.03",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_0.IFO",
+   "source": "original",
+   "mtime": "1585245612",
+   "size": "145408",
+   "md5": "ffc411ec825910a4bbb318e9c3df81da",
+   "crc32": "cd9c8cc7",
+   "sha1": "f178b1cccff700c32ea30f43f26d5cca9a8ef0d4",
+   "format": "DVD Info"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_1.VOB",
+   "source": "original",
+   "mtime": "1585246459",
+   "size": "1073739776",
+   "md5": "34564fe602935b1dce74cd068cd10b0a",
+   "crc32": "dc9a5dae",
+   "sha1": "d47d51d8c4c2401da6a5b328bf9994a353eff4aa",
+   "format": "MPEG2",
+   "length": "3618.1",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_1.cc5.srt",
+   "source": "derivative",
+   "format": "SubRip",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_1.VOB",
+   "mtime": "1585292357",
+   "size": "38448",
+   "md5": "7fd80cd4bce2f85e06ddc82065cf2f9a",
+   "crc32": "b3c842cf",
+   "sha1": "820cd4abeb1fc24916d949be30d937393d0f8d2a"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_1.mp4",
+   "source": "derivative",
+   "format": "h.264",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_1.VOB",
+   "mtime": "1585263302",
+   "size": "378135055",
+   "md5": "f9d24cba04705b36d53a459950df16e7",
+   "crc32": "10865a0b",
+   "sha1": "17c19c15266856231dba3b55721ee2317963a3b4",
+   "length": "3618.22",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_2.VOB",
+   "source": "original",
+   "mtime": "1585247433",
+   "size": "1073739776",
+   "md5": "0a55a7e617b586aa4bd42fea8862f83d",
+   "crc32": "837c5878",
+   "sha1": "5e8775c4941e5fa220191f72ed3e04c8f5910c36",
+   "format": "MPEG2",
+   "length": "3638.4",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_2.cc5.srt",
+   "source": "derivative",
+   "format": "SubRip",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_2.VOB",
+   "mtime": "1585292400",
+   "size": "22174",
+   "md5": "a5d4b84946007959fe5ddad40f47c998",
+   "crc32": "313fe487",
+   "sha1": "b94cc6a4002eb08e0efc252ae5e15753aae9f877"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_2.mp4",
+   "source": "derivative",
+   "format": "h.264",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_2.VOB",
+   "mtime": "1585272409",
+   "size": "380713136",
+   "md5": "6aba02d4db72fd204151a1021b305dbd",
+   "crc32": "fab149f6",
+   "sha1": "beeaf5ad595ee61bcd63a6f39c451f4412b63239",
+   "length": "3638.94",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_3.VOB",
+   "source": "original",
+   "mtime": "1585248464",
+   "size": "1073739776",
+   "md5": "18c915b11d8b34a41caf3829b7993033",
+   "crc32": "794d3f3b",
+   "sha1": "fc2d3a3602b8ce5e52ae6fc291559f0aeac0a691",
+   "format": "MPEG2",
+   "length": "3644.2",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_3.mp4",
+   "source": "derivative",
+   "format": "h.264",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_3.VOB",
+   "mtime": "1585281739",
+   "size": "381141261",
+   "md5": "b731667a7b4f5d3997a18546ffce16fa",
+   "crc32": "64da7f0e",
+   "sha1": "71609aa8a2ba3bedb3393ef7b8280661105a3934",
+   "length": "3644.94",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_4.VOB",
+   "source": "original",
+   "mtime": "1585249411",
+   "size": "1059155968",
+   "md5": "e9bc51c496d54b0f170dae22ebb617ba",
+   "crc32": "922d86dd",
+   "sha1": "bf3fc1afe79442792869019608e9e59443f456c3",
+   "format": "MPEG2",
+   "length": "3712.8",
+   "height": "480",
+   "width": "640"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_4.cc5.srt",
+   "source": "derivative",
+   "format": "SubRip",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_4.VOB",
+   "mtime": "1585292567",
+   "size": "38201",
+   "md5": "68610e3f21e695dc083beaffab7be55b",
+   "crc32": "fd499e35",
+   "sha1": "e8a915e339e6ef9230a409d751ef49203786b0e4"
+  },
+  {
+   "name": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_4.mp4",
+   "source": "derivative",
+   "format": "h.264",
+   "original": "Cartoon Cartoon Fridays 2000 The Mayor Hosts/VIDEO_TS/VTS_01_4.VOB",
+   "mtime": "1585292309",
+   "size": "387577386",
+   "md5": "572aafafcbd497fe0754718b6d1a6876",
+   "crc32": "5ae46afa",
+   "sha1": "08c929d057317b9d95d4c7115a7119897c3c473a",
+   "length": "3713.58",
+   "height": "480",
+   "width": "640"
+  }
+ ]
+}

@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://archive.org https://*.archive.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'none'">
+  <title>Retro TV Library</title>
+  <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+  <header>
+    <div class="brand">RETRO TV <span>Library</span></div>
+    <nav>
+      <button data-tab="find" class="on">Find</button>
+      <button data-tab="downloads">Downloads <b id="dl-badge" hidden></b></button>
+      <button data-tab="library">My Library</button>
+      <button data-tab="channels">Channels</button>
+      <button data-tab="drives">Your drives</button>
+      <button data-tab="home">Phone at home</button>
+    </nav>
+    <div id="tools" class="tools"></div>
+  </header>
+
+  <main>
+    <!-- Find -->
+    <section id="tab-find" class="tab on">
+      <form id="search" class="filters">
+        <input name="text" type="search" placeholder="Search: Toonami, Rugrats, Cartoon Cartoon Fridays, toy commercials..." autofocus>
+        <select name="scope"></select>
+        <select name="network">
+          <option value="">Any network</option>
+          <option>Cartoon Network</option><option>Toonami</option><option>Adult Swim</option>
+          <option>Nickelodeon</option><option>Nick Jr.</option><option>Disney Channel</option>
+          <option>One Saturday Morning</option><option>Fox Kids</option><option>Kids' WB</option>
+          <option>PBS Kids</option><option>4Kids</option><option>G4</option><option>MTV</option>
+        </select>
+        <select name="category">
+          <option value="">Anything</option>
+          <option value="broadcast">Complete broadcasts</option>
+          <option value="episodes">Episodes</option>
+          <option value="commercials">Commercials</option>
+          <option value="bumpers">Bumpers &amp; promos</option>
+        </select>
+        <input name="yearFrom" type="number" min="1950" max="2030" placeholder="From year">
+        <input name="yearTo" type="number" min="1950" max="2030" placeholder="To year">
+        <select name="sort">
+          <option value="popular">Most downloaded</option>
+          <option value="date">Oldest air date first</option>
+          <option value="new">Newest uploads</option>
+        </select>
+        <button type="submit" class="primary">Search</button>
+      </form>
+      <div class="split">
+        <div class="results-wrap">
+          <div id="results-info" class="muted">Search the Internet Archive's off-air TV recordings. Results open on the right.</div>
+          <div id="results" class="results"></div>
+          <div id="pager" class="pager"></div>
+        </div>
+        <aside id="item" class="item" hidden></aside>
+      </div>
+    </section>
+
+    <!-- Downloads -->
+    <section id="tab-downloads" class="tab">
+      <div class="bar">
+        <span class="muted">Downloads land in <code>media/inbox</code> unless you picked a channel. Interrupted downloads resume when Retro TV starts again.</span>
+        <button id="clear-done">Clear finished</button>
+      </div>
+      <div id="jobs" class="jobs"></div>
+      <div class="bar" id="conv-bar" hidden>
+        <h3>Conversions</h3>
+        <button id="clear-conv">Clear finished</button>
+      </div>
+      <div id="conversions" class="jobs"></div>
+    </section>
+
+    <!-- Library -->
+    <section id="tab-library" class="tab">
+      <div class="filters">
+        <input id="lib-filter" type="search" placeholder="Filter by name, show, network...">
+        <select id="lib-role">
+          <option value="">Everything</option>
+          <option value="unassigned">Inbox (not on a channel yet)</option>
+          <option value="show">Shows</option>
+          <option value="bumper">Bumpers</option>
+          <option value="commercial">Commercials</option>
+          <option value="problems">Missing or won't play</option>
+        </select>
+        <button id="import">Import files...</button>
+        <button id="probe-all">Inspect all with ffprobe</button>
+        <button id="convert-all" title="Make every file that won't play on the TV playable (originals are kept)">Convert all that won't play</button>
+        <button id="compare" disabled>Compare selected</button>
+      </div>
+      <div class="split">
+        <div class="table-wrap"><table id="lib-table"></table></div>
+        <aside id="entry" class="item" hidden></aside>
+      </div>
+    </section>
+
+    <!-- Channels -->
+    <section id="tab-channels" class="tab">
+      <form id="new-channel" class="filters">
+        <input name="number" type="number" min="1" max="999" placeholder="Number" required>
+        <input name="name" placeholder="Channel name" required>
+        <button type="submit" class="primary">Add channel</button>
+        <button type="button" id="export-phone" title="Channels, time blocks, profiles and video details for the phone app (no PIN, no videos)">Export for phone</button>
+        <span class="muted">Channels 2 to 14 are the live web channels in <code>channels.json</code>. Folder channels appear on the TV once they have a playable video.</span>
+      </form>
+      <div id="channels" class="channels"></div>
+    </section>
+
+    <!-- Your drives: folders used where they are -->
+    <section id="tab-drives" class="tab">
+      <div id="drives" class="home"></div>
+    </section>
+
+    <!-- Phone at home -->
+    <section id="tab-home" class="tab">
+      <div id="home" class="home"></div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" hidden><div class="modal-box"></div></div>
+  <div id="toast" class="toast" hidden></div>
+  <script src="manager.js"></script>
+</body>
+</html>

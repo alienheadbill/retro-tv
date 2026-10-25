@@ -1,0 +1,1473 @@
+{
+  "settings": {
+    "display": "secondary",
+    "startChannel": 2,
+    "crt": true,
+    "mediaFolder": "media",
+    "localOrder": "shuffle",
+    "breaks": {
+      "bumpers": 1,
+      "commercials": 3
+    },
+    "ffprobePath": "",
+    "pin": "",
+    "defaultProfile": "family",
+    "profiles": {
+      "kids": {
+        "label": "Kids",
+        "channels": [
+          "4",
+          "5",
+          "16",
+          "20",
+          "22",
+          "23",
+          "24",
+          "70-79",
+          "100-108",
+          "200-229",
+          "300-305"
+        ],
+        "maxRating": "TV-Y7"
+      },
+      "family": {
+        "label": "Family",
+        "channels": [
+          "2",
+          "4",
+          "5",
+          "7",
+          "8",
+          "9",
+          "10",
+          "11",
+          "15-19",
+          "20-24",
+          "30",
+          "31",
+          "50",
+          "60",
+          "70-91",
+          "100-132",
+          "200-229",
+          "300-306",
+          "400-499"
+        ],
+        "maxRating": "TV-PG",
+        "always": [
+          "400-499"
+        ]
+      },
+      "late": {
+        "label": "Late Night",
+        "channels": [
+          "*"
+        ],
+        "locked": true
+      }
+    },
+    "profileSchedule": []
+  },
+  "channels": [
+    {
+      "number": 2,
+      "name": "Toonami Aftermath",
+      "type": "web",
+      "url": "https://www.toonamiaftermath.com/",
+      "description": "Toonami and Cartoon Network anime blocks, with the original bumps."
+    },
+    {
+      "number": 3,
+      "name": "CN Classic",
+      "type": "twitch",
+      "channel": "tunnyo123",
+      "description": "Cartoon Network, Kids' WB and Fox Kids.",
+      "enabled": false,
+      "note": "Twitch account no longer exists (checked 2026-10-23)"
+    },
+    {
+      "number": 4,
+      "name": "That's So Disney",
+      "type": "vaughn",
+      "channel": "thatsodisney",
+      "description": "90s and 2000s Disney Channel."
+    },
+    {
+      "number": 5,
+      "name": "NickPicks",
+      "type": "vaughn",
+      "channel": "nickpicks",
+      "description": "90s and 2000s Nickelodeon."
+    },
+    {
+      "number": 6,
+      "name": "90s Rewind",
+      "type": "twitch",
+      "channel": "90srewind",
+      "description": "Mostly Nickelodeon, with the commercials.",
+      "enabled": false,
+      "note": "Twitch account no longer exists (checked 2026-10-23)"
+    },
+    {
+      "number": 7,
+      "name": "Cartoon Network 24",
+      "type": "vaughn",
+      "channel": "cartoonnetwork24",
+      "description": "Cartoon Network around the clock."
+    },
+    {
+      "number": 8,
+      "name": "90s Cartoon Central",
+      "type": "vaughn",
+      "channel": "90scartooncentral",
+      "description": "Cartoons from every network."
+    },
+    {
+      "number": 9,
+      "name": "RetroBlast",
+      "type": "owncast",
+      "url": "https://retroblast.tv",
+      "description": "Cartoon Network and anime classics."
+    },
+    {
+      "number": 10,
+      "name": "00s Retro TV",
+      "type": "web",
+      "url": "https://00s.myretrotvs.com/",
+      "start": "#btn_power",
+      "description": "2000s music videos and performances, shuffled like real TV."
+    },
+    {
+      "number": 11,
+      "name": "90s & 2000s Nostalgia",
+      "type": "twitch",
+      "channel": "90sand2000snostalgia",
+      "description": "A bit of everything from the 90s and 2000s."
+    },
+    {
+      "number": 12,
+      "name": "SFTV",
+      "type": "twitch",
+      "channel": "sftv444",
+      "description": "General nostalgia TV.",
+      "enabled": false,
+      "note": "Twitch account no longer exists (checked 2026-10-23)"
+    },
+    {
+      "number": 13,
+      "name": "4GTV",
+      "type": "twitch",
+      "channel": "grupstra0",
+      "description": "Classic G4: video game TV. Teens and up.",
+      "rating": "TV-14",
+      "enabled": false,
+      "note": "Twitch account no longer exists (checked 2026-10-23)"
+    },
+    {
+      "number": 14,
+      "name": "Swim Rewind",
+      "type": "owncast",
+      "url": "https://swimrewind.com",
+      "description": "Classic Adult Swim. Grown-ups only.",
+      "rating": "TV-MA",
+      "enabled": true
+    },
+    {
+      "number": 15,
+      "name": "Cartoon Cartoons Network",
+      "type": "owncast",
+      "url": "https://cartooncartoons.thatsoretro.com",
+      "description": "Classic Cartoon Network, Toonami and Adult Swim, with rare bumpers.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 16,
+      "name": "CerealBowl Cartoons",
+      "type": "owncast",
+      "url": "https://stream.box464.com",
+      "description": "80s Saturday-morning cartoons.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 17,
+      "name": "RetroStrange TV",
+      "type": "owncast",
+      "url": "https://live.retrostrange.com",
+      "description": "Public-domain movies and TV, 24/7.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 18,
+      "name": "Old Timey Computer Show",
+      "type": "owncast",
+      "url": "https://otcs.minuspoint.com",
+      "description": "Vintage computer and video game tapes, ads and films.",
+      "rating": "TV-G"
+    },
+    {
+      "number": 19,
+      "name": "Giant Bomb Forever",
+      "type": "twitch",
+      "channel": "giantbombforever",
+      "description": "24/7 video game TV from the Giant Bomb archive.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 70,
+      "name": "90's Kids (Nick)",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/90s-kids-tv",
+      "description": "Pluto TV: Rugrats, Hey Arnold!, Kenan & Kel and more.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 71,
+      "name": "90s Kids TV 2",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/90s-kids-tv-2",
+      "description": "Pluto TV: more 90s Nickelodeon.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 72,
+      "name": "Nickelodeon (Pluto)",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/nick-pluto-tv",
+      "description": "Pluto TV: classic Nickelodeon shows.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 73,
+      "name": "Nick Jr. (Pluto)",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/nick-jr-pluto-tv-ptv1",
+      "description": "Pluto TV: preschool favorites.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 74,
+      "name": "Totally Turtles",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/totally-turtles",
+      "description": "Pluto TV: Teenage Mutant Ninja Turtles.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 75,
+      "name": "Garfield and Friends",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/garfield-and-friends",
+      "description": "Pluto TV: Garfield and Friends.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 76,
+      "name": "Go Go Gadget!",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/go-go-gadget",
+      "description": "Pluto TV: Inspector Gadget.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 77,
+      "name": "Pokémon",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/pokemon",
+      "description": "Pluto TV: Pokémon.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 78,
+      "name": "Mister Rogers",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/mister-rogers-neighborhood",
+      "description": "Pluto TV: Mister Rogers' Neighborhood.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 80,
+      "name": "Sailor Moon",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/sailor-moon",
+      "description": "Pluto TV: Sailor Moon.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 81,
+      "name": "Naruto",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/naruto",
+      "description": "Pluto TV: Naruto.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 82,
+      "name": "Inuyasha",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/inuyasha-ptv2",
+      "description": "Pluto TV: Inuyasha.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 83,
+      "name": "Yu-Gi-Oh!",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/yu-gi-oh-ptv1",
+      "description": "Pluto TV: Yu-Gi-Oh!",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 84,
+      "name": "Pluto TV Anime",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/pluto-tv-anime-1-ptv1",
+      "description": "Pluto TV: anime from many series.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 85,
+      "name": "TV Land Sitcoms",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/tv-land-sitcoms",
+      "description": "Pluto TV: classic sitcoms.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 86,
+      "name": "Classic TV Comedy",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/classic-tv-comedy",
+      "description": "Pluto TV: classic comedies.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 87,
+      "name": "iCarly",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/icarly-tv",
+      "description": "Pluto TV: iCarly.",
+      "rating": "TV-G"
+    },
+    {
+      "number": 88,
+      "name": "Degrassi",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/degrassi",
+      "description": "Pluto TV: Degrassi.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 89,
+      "name": "Vevo '90s",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/vevo-90s",
+      "description": "Pluto TV: 90s music videos.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 90,
+      "name": "MST3K",
+      "type": "twitch",
+      "channel": "mst3k",
+      "description": "Official 24/7 Mystery Science Theater 3000.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 91,
+      "name": "RiffTrax",
+      "type": "twitch",
+      "channel": "rifftrax",
+      "description": "Official 24/7 RiffTrax, from the MST3K cast.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 100,
+      "name": "Dora TV",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/dora-tv-ptv2",
+      "description": "Pluto TV: Dora the Explorer and friends.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 101,
+      "name": "Kartoon Channel!",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/kartoon-channel",
+      "description": "Pluto TV: cartoons for kids.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 102,
+      "name": "Forever Kids",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/forever-kids",
+      "description": "Pluto TV: classic kids' adventures.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 103,
+      "name": "Kids Movie Club",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/kids-movie-club",
+      "description": "Pluto TV: animated and live-action kids' movies.",
+      "rating": "TV-G"
+    },
+    {
+      "number": 104,
+      "name": "LEGO Kids TV",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/lego-kids-tv",
+      "description": "Pluto TV: LEGO series.",
+      "rating": "TV-Y7"
+    },
+    {
+      "number": 105,
+      "name": "Strawberry Shortcake",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/strawberry-shortcake-and-friends",
+      "description": "Pluto TV: Strawberry Shortcake and Friends.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 106,
+      "name": "Peppa Pig",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/peppapig",
+      "description": "Pluto TV: Peppa Pig.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 107,
+      "name": "Baby Shark TV",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/baby-shark-tv",
+      "description": "Pluto TV: songs and nursery rhymes.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 108,
+      "name": "Little Stars Universe",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/little-stars-universe",
+      "description": "Pluto TV: 24/7 preschool shows.",
+      "rating": "TV-Y"
+    },
+    {
+      "number": 110,
+      "name": "One Piece",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/one-piece",
+      "description": "Pluto TV: One Piece.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 111,
+      "name": "Boruto",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/boruto-naruto-next-generations-ptv2",
+      "description": "Pluto TV: Boruto: Naruto Next Generations.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 112,
+      "name": "Crunchyroll",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/crunchyroll",
+      "description": "Pluto TV: Crunchyroll's free anime channel.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 113,
+      "name": "Anime Movies",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/pluto-tv-anime-movies",
+      "description": "Pluto TV: feature-length anime.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 114,
+      "name": "ANIME x HIDIVE",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/anime-x-hidive",
+      "description": "Pluto TV: HIDIVE's anime channel.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 115,
+      "name": "Big A Anime",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/big-a-anime",
+      "description": "Pluto TV: series, movies and fan culture.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 120,
+      "name": "Survivor",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/survivor-ptv1",
+      "description": "Pluto TV: Survivor, 24/7.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 121,
+      "name": "Big Brother",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/big-brother",
+      "description": "Pluto TV: Big Brother.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 122,
+      "name": "The Amazing Race",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/the-amazing-race",
+      "description": "Pluto TV: The Amazing Race.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 123,
+      "name": "America's Next Top Model",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/americas-next-top-model-ptv2",
+      "description": "Pluto TV: America's Next Top Model.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 124,
+      "name": "Project Runway",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/project-runway",
+      "description": "Pluto TV: Project Runway.",
+      "rating": "TV-PG"
+    },
+    {
+      "number": 125,
+      "name": "Hell's Kitchen",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/gordon-ramsays-hells-kitchen",
+      "description": "Pluto TV: Gordon Ramsay's Hell's Kitchen.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 126,
+      "name": "The Challenge",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/the-challenge",
+      "description": "Pluto TV: MTV's The Challenge.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 127,
+      "name": "Jersey Shore",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/jersey-shore",
+      "description": "Pluto TV: Jersey Shore and MTV favorites.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 128,
+      "name": "Teen Mom",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/teen-mom",
+      "description": "Pluto TV: MTV's Teen Mom.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 129,
+      "name": "MTV Pluto TV",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/mtv-pluto-tv",
+      "description": "Pluto TV: classic MTV reality and series.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 130,
+      "name": "Bad Girls Club",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/bad-girls-club",
+      "description": "Pluto TV: Bad Girls Club.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 131,
+      "name": "Love & Hip Hop",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/love-and-hip-hop",
+      "description": "Pluto TV: VH1's Love & Hip Hop.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 132,
+      "name": "Pluto TV Reality",
+      "type": "web",
+      "url": "https://pluto.tv/us/live-tv/pluto-tv-reality",
+      "description": "Pluto TV: a mix of reality favorites.",
+      "rating": "TV-14"
+    },
+    {
+      "number": 200,
+      "name": "Dexter's Laboratory",
+      "type": "youtube-live",
+      "channelId": "UCX9EuLuarfDjJRYt9l0Bbjg",
+      "match": "full episodes",
+      "rating": "TV-Y7",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 201,
+      "name": "Ed, Edd n Eddy",
+      "type": "youtube-live",
+      "channelId": "UCLiD5R9zNdNmEdyr_F0w2AQ",
+      "match": "full episodes",
+      "rating": "TV-Y7",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 202,
+      "name": "Courage the Cowardly Dog",
+      "type": "youtube-live",
+      "channelId": "UCxsiZ1drga5K2na09h1yhyg",
+      "match": "full episodes",
+      "rating": "TV-Y7",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 203,
+      "name": "Cartoon Cartoons",
+      "type": "youtube-live",
+      "channelId": "UCx8nU9xWEyden60hkKBaAvg",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Classic Cartoon Network marathon."
+    },
+    {
+      "number": 204,
+      "name": "Cartoon Network",
+      "type": "youtube-live",
+      "channelId": "UCMsgXPD3wzzt8RxHJmXH7hQ",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Cartoon Network's own live stream."
+    },
+    {
+      "number": 205,
+      "name": "Total Drama Island",
+      "type": "youtube-live",
+      "channelId": "UCaf_hcOZous_DNct6xmc-Ow",
+      "match": "total drama island",
+      "rating": "TV-PG",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 206,
+      "name": "Total Drama World Tour",
+      "type": "youtube-live",
+      "channelId": "UCaf_hcOZous_DNct6xmc-Ow",
+      "match": "world tour",
+      "rating": "TV-PG",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 207,
+      "name": "Total Drama Action",
+      "type": "youtube-live",
+      "channelId": "UCaf_hcOZous_DNct6xmc-Ow",
+      "match": "total drama action",
+      "rating": "TV-PG",
+      "description": "Official 24/7 stream."
+    },
+    {
+      "number": 208,
+      "name": "Scooby-Doo",
+      "type": "youtube-live",
+      "channelId": "UC9trsD1jCTXXtN3xIOIU8gg",
+      "match": "scooby",
+      "rating": "TV-Y7",
+      "description": "WB Kids' official stream."
+    },
+    {
+      "number": 209,
+      "name": "Tom and Jerry",
+      "type": "youtube-live",
+      "channelId": "UCmst562fALOY2cKb4IFgqEg",
+      "match": "tom and jerry",
+      "rating": "TV-G",
+      "description": "Boomerang's official stream."
+    },
+    {
+      "number": 210,
+      "name": "SpongeBob",
+      "type": "youtube-live",
+      "channelId": "UCx27Pkk8plpiosF14qXq-VA",
+      "match": "spongebob",
+      "rating": "TV-Y7",
+      "description": "Official SpongeBob stream."
+    },
+    {
+      "number": 211,
+      "name": "Nicktoons",
+      "type": "youtube-live",
+      "channelId": "UC74bcC7aGRNz4KoRpJsJNEw",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Nicktoons' official stream."
+    },
+    {
+      "number": 212,
+      "name": "Gravity Falls",
+      "type": "youtube-live",
+      "channelId": "UCw7SNYrYei7F5ttQO3o-rpA",
+      "match": "gravity falls",
+      "rating": "TV-Y7",
+      "description": "Disney's official 24/7 stream."
+    },
+    {
+      "number": 213,
+      "name": "Phineas and Ferb",
+      "type": "youtube-live",
+      "channelId": "UCw7SNYrYei7F5ttQO3o-rpA",
+      "match": "phineas",
+      "rating": "TV-G",
+      "description": "Disney's official 24/7 stream."
+    },
+    {
+      "number": 214,
+      "name": "Wizards of Waverly Place",
+      "type": "youtube-live",
+      "channelId": "UCktaw9L-f65LzUUdjmCFkbQ",
+      "match": "wizards",
+      "rating": "TV-G",
+      "description": "Disney Channel's official 24/7 stream."
+    },
+    {
+      "number": 215,
+      "name": "Lilo & Stitch: The Series",
+      "type": "youtube-live",
+      "channelId": "UC7Gf2tZ8coTX2ckTPgn62iQ",
+      "match": "lilo",
+      "rating": "TV-Y7",
+      "description": "Disney's official 24/7 stream."
+    },
+    {
+      "number": 216,
+      "name": "Rescue Rangers",
+      "type": "youtube-live",
+      "channelId": "UC7Gf2tZ8coTX2ckTPgn62iQ",
+      "match": "rescue rangers",
+      "rating": "TV-Y7",
+      "description": "Disney's official 24/7 stream."
+    },
+    {
+      "number": 217,
+      "name": "Goosebumps",
+      "type": "youtube-live",
+      "channelId": "UCcXanrGa3XFPtWXSz1MzGrQ",
+      "match": "goosebumps",
+      "rating": "TV-PG",
+      "description": "Scholastic's official stream."
+    },
+    {
+      "number": 218,
+      "name": "Mighty Morphin Power Rangers",
+      "type": "youtube-live",
+      "channelId": "UC-r13SLLdZtZNmuC2bMnlmw",
+      "match": "mighty morphin",
+      "rating": "TV-Y7",
+      "description": "Hasbro's official 24/7 stream."
+    },
+    {
+      "number": 219,
+      "name": "Power Rangers",
+      "type": "youtube-live",
+      "channelId": "UCpgxmlXoDtkYzRQ4cJgCT5A",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Power Rangers' official 24/7 stream."
+    },
+    {
+      "number": 220,
+      "name": "G.I. Joe",
+      "type": "youtube-live",
+      "channelId": "UC-r13SLLdZtZNmuC2bMnlmw",
+      "match": "real american hero",
+      "rating": "TV-Y7",
+      "description": "Hasbro's official 24/7 stream."
+    },
+    {
+      "number": 221,
+      "name": "Yu-Gi-Oh! Channel",
+      "type": "youtube-live",
+      "channelId": "UCZuVXrpKTUn_KEzRQgFgMWg",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Official Yu-Gi-Oh! 24/7 stream."
+    },
+    {
+      "number": 222,
+      "name": "Voltron",
+      "type": "youtube-live",
+      "channelId": "UCQwWOpZHcaQHhhohuEYDQ1g",
+      "match": "",
+      "rating": "TV-Y7",
+      "description": "Official 24/7 stream of the 80s anime."
+    },
+    {
+      "number": 223,
+      "name": "Johnny Test",
+      "type": "youtube-live",
+      "channelId": "UCqdgeIot-FbCtOpTfGSEftA",
+      "match": "johnny test",
+      "rating": "TV-Y7",
+      "description": "WildBrain's official stream."
+    },
+    {
+      "number": 224,
+      "name": "The Smurfs",
+      "type": "youtube-live",
+      "channelId": "UCeY4C8Sbx8B4bIyREPSvORQ",
+      "match": "smurfs",
+      "rating": "TV-Y",
+      "description": "Official Smurfs stream."
+    },
+    {
+      "number": 225,
+      "name": "Arthur",
+      "type": "youtube-live",
+      "channelId": "UCrNnk0wFBnCS1awGjq_ijGQ",
+      "match": "arthur",
+      "rating": "TV-Y",
+      "description": "PBS KIDS official stream."
+    },
+    {
+      "number": 226,
+      "name": "Teletubbies",
+      "type": "youtube-live",
+      "channelId": "UCOk55dAgB8VnMlhaTEMeX5A",
+      "match": "",
+      "rating": "TV-Y",
+      "description": "WildBrain's official stream."
+    },
+    {
+      "number": 227,
+      "name": "Bluey",
+      "type": "youtube-live",
+      "channelId": "UCVzLLZkDuFGAE2BGdBuBNBg",
+      "match": "",
+      "rating": "TV-Y",
+      "description": "Official Bluey stream."
+    },
+    {
+      "number": 228,
+      "name": "Mickey Mouse",
+      "type": "youtube-live",
+      "channelId": "UCNcdbMyA59zE-Vk668bKWOg",
+      "match": "mickey",
+      "rating": "TV-Y",
+      "description": "Disney Jr.'s official 24/7 stream."
+    },
+    {
+      "number": 229,
+      "name": "Winnie the Pooh",
+      "type": "youtube-live",
+      "channelId": "UCNcdbMyA59zE-Vk668bKWOg",
+      "match": "pooh",
+      "rating": "TV-Y",
+      "description": "Disney Jr.'s official 24/7 stream."
+    },
+    {
+      "number": 300,
+      "name": "Nicktoons '90s",
+      "type": "youtube",
+      "rating": "TV-Y7",
+      "description": "Rugrats, Hey Arnold!, Rocket Power, CatDog and The Fairly OddParents, with 90s commercials. Fan-uploaded playlists.",
+      "playlists": [
+        {
+          "id": "PLcoBFEh0-1oh3xDWYRaiFdCMFdrutkj0B",
+          "show": "Rugrats"
+        },
+        {
+          "id": "PLRk7c3MmsRI0PCmJN2amjQa41-uAaNUUk",
+          "show": "Hey Arnold!"
+        },
+        {
+          "id": "PL5y3t4E1l0HaJkBo5bfYeQhS7Iwp5d9do",
+          "show": "Rocket Power"
+        },
+        {
+          "id": "PLfrgt_xI4Xq2Cg78vsEjqEs-aJv1HQmO0",
+          "show": "CatDog"
+        },
+        {
+          "id": "PLiHCGKI2GVtoLz25HEfUbbo4o_xyCRBO4",
+          "show": "The Fairly OddParents"
+        }
+      ],
+      "commercials": [
+        "PLrMFSx8niZy4cbfBJdNZcrXDgv2knIKHm"
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 2
+      }
+    },
+    {
+      "number": 301,
+      "name": "Cartoon Network Classics",
+      "type": "youtube",
+      "rating": "TV-Y7",
+      "description": "Dexter's Lab, Ed, Edd n Eddy, Powerpuff Girls, Johnny Bravo and Courage, with CN bumpers. Fan-uploaded playlists.",
+      "playlists": [
+        {
+          "id": "PLcoBFEh0-1ogY5uz4tbZx3iDxfeXrZqdx",
+          "show": "Dexter's Laboratory"
+        },
+        {
+          "id": "PLLIU9nFd9IrF_D4XRfv1n_VyqwVzxUg05",
+          "show": "Ed, Edd n Eddy"
+        },
+        {
+          "id": "PLXND7HvZiAEY",
+          "show": "The Powerpuff Girls"
+        },
+        {
+          "id": "PLHNV0GfhqEBSPxOzMhAEwSBDsEyP95ckn",
+          "show": "Johnny Bravo"
+        },
+        {
+          "id": "PLfrgt_xI4Xq1NAfhw6GA64W6JrjNhJD3c",
+          "show": "Courage the Cowardly Dog"
+        }
+      ],
+      "bumpers": [
+        "PLpBGNxCoQnIjWaTY-1eVE4TGI_bKuk9R_",
+        "PLLly2h-2-eI-6YdAk0X3UmYko7-l-DrHa"
+      ],
+      "commercials": [
+        "PLrMFSx8niZy4cbfBJdNZcrXDgv2knIKHm",
+        "PLwFZzJ5atKPUnUAFMIZrPwE7WodlrDF0m"
+      ],
+      "breaks": {
+        "bumpers": 1,
+        "commercials": 2
+      }
+    },
+    {
+      "number": 302,
+      "name": "Disney Afternoon",
+      "type": "youtube",
+      "rating": "TV-G",
+      "description": "Recess, Doug, Kim Possible and Lizzie McGuire, with 2000s commercials. Fan-uploaded playlists.",
+      "playlists": [
+        {
+          "id": "PLCVuwQ1eXVCXaO-At7kRYftCHyhGEnjhW",
+          "show": "Recess"
+        },
+        {
+          "id": "PLDIOhdcFbuU_y21H_3hF6THcew3lcne2P",
+          "show": "Doug"
+        },
+        {
+          "id": "PLEUYJ_QGA-e4",
+          "show": "Kim Possible"
+        },
+        {
+          "id": "PLg6R6yXKSLYB5LEZ3LS9wy_ob5GCFs9S3",
+          "show": "Lizzie McGuire"
+        }
+      ],
+      "commercials": [
+        "PLwFZzJ5atKPUnUAFMIZrPwE7WodlrDF0m"
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 2
+      }
+    },
+    {
+      "number": 303,
+      "name": "Toonami (YouTube)",
+      "type": "youtube",
+      "rating": "TV-PG",
+      "description": "Yu-Gi-Oh! and Digimon, with Toonami bumpers. Fan-uploaded playlists.",
+      "playlists": [
+        {
+          "id": "PLXBcsPKqNstB10447aKbDnkPEJdTV9sj-",
+          "show": "Yu-Gi-Oh!"
+        },
+        {
+          "id": "PLXBcsPKqNstANEIGsKMINWSinvMNDmEaa",
+          "show": "Yu-Gi-Oh!"
+        },
+        {
+          "id": "PLeJlOYRf_28c",
+          "show": "Digimon Adventure"
+        }
+      ],
+      "bumpers": [
+        "PLt9ZpOcyrlAXwM9zoqsug1dBcvE_cLf41"
+      ],
+      "breaks": {
+        "bumpers": 2,
+        "commercials": 0
+      }
+    },
+    {
+      "number": 304,
+      "name": "Saturday Morning (YouTube)",
+      "type": "youtube",
+      "rating": "TV-Y7",
+      "description": "Ninja Turtles, Spider-Man, X-Men and Power Rangers, with 90s commercials. Fan-uploaded playlists.",
+      "playlists": [
+        {
+          "id": "PL9FtL6eB-Npz8Buyh-WY1lW89qITzvPVn",
+          "show": "Teenage Mutant Ninja Turtles"
+        },
+        {
+          "id": "PL68EED621DE78B9E9",
+          "show": "Spider-Man"
+        },
+        {
+          "id": "PLjScWr8bfGJNKbqibXOVakU6hG65Gn2rI",
+          "show": "X-Men"
+        },
+        {
+          "id": "PLVT77ZU-Oo_Y8DelmXv0P3eDeBB1td69R",
+          "show": "X-Men: Evolution"
+        },
+        {
+          "id": "PLXMHiq-JqYUa2S3y8iK-WjIOp9b13PDwd",
+          "show": "Mighty Morphin Power Rangers"
+        }
+      ],
+      "commercials": [
+        "PLrMFSx8niZy4cbfBJdNZcrXDgv2knIKHm"
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 2
+      }
+    },
+    {
+      "number": 305,
+      "name": "Pokémon",
+      "type": "youtube",
+      "rating": "TV-Y7",
+      "description": "Pokémon from the beginning, in order. Fan-uploaded playlist.",
+      "playlists": [
+        {
+          "id": "PLo60BvbiWBuqUwSRFou3pbPV2IAWaP0rg",
+          "show": "Pokémon"
+        }
+      ],
+      "order": "sequential",
+      "commercials": [
+        "PLwFZzJ5atKPUnUAFMIZrPwE7WodlrDF0m"
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 1
+      }
+    },
+    {
+      "number": 306,
+      "name": "Singing Shows",
+      "type": "youtube",
+      "rating": "TV-PG",
+      "description": "American Idol, The X Factor, Britain's Got Talent and America's Got Talent, mostly from the shows' official channels.",
+      "playlists": [
+        {
+          "id": "PLeVGUUkkAO3_A5AhyELcz4hMRKyrafGCD",
+          "show": "American Idol"
+        },
+        {
+          "id": "PL8x9Zx_hMDsZJeKsUoH10JGr7P5J1B1aa",
+          "show": "American Idol"
+        },
+        {
+          "id": "PL8x9Zx_hMDsbNZZB6w0ZVAj3pPkEgPd3D",
+          "show": "American Idol"
+        },
+        {
+          "id": "PLLJQHjmJHb1rTo4541ZAG_jaqS6PR5oKk",
+          "show": "The X Factor"
+        },
+        {
+          "id": "PLLJQHjmJHb1rxPRJd3qaA9C2PXaK00-w7",
+          "show": "The X Factor"
+        },
+        {
+          "id": "PLLJQHjmJHb1rGyRi0iR95QabECFhevjDP",
+          "show": "The X Factor"
+        },
+        {
+          "id": "PLLJQHjmJHb1qs2wdsByE5gZvuOuO4JaHx",
+          "show": "The X Factor"
+        },
+        {
+          "id": "PL56D19EF8CAE2F0F5",
+          "show": "Britain's Got Talent"
+        },
+        {
+          "id": "PLAGuq7Vu0WcJa374XukK9If4Yjvdislqt",
+          "show": "Britain's Got Talent"
+        },
+        {
+          "id": "PLAGuq7Vu0WcKEaLEJWT-WK_kyz3QjDxhZ",
+          "show": "Britain's Got Talent"
+        },
+        {
+          "id": "PL2DuvvTZtSy9Id1cJxFow-957ioDDBfus",
+          "show": "America's Got Talent"
+        },
+        {
+          "id": "PL2DuvvTZtSy_gfQ5i2fMKANfvqkvdzAiH",
+          "show": "America's Got Talent"
+        },
+        {
+          "id": "PL2DuvvTZtSy9To1iJm7lbPI1hd3OI4MSD",
+          "show": "America's Got Talent"
+        }
+      ],
+      "commercials": [
+        "PLwFZzJ5atKPUnUAFMIZrPwE7WodlrDF0m"
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 1
+      },
+      "minMinutes": 1
+    },
+    {
+      "number": 400,
+      "name": "Classic Wrestling '80s",
+      "type": "youtube",
+      "rating": "TV-PG",
+      "description": "Full 80s shows and events: WWF, AWA, NWA/WCW and WCCW. Official WWE Vault uploads first, then your playlists; duplicates removed.",
+      "playlists": [
+        {
+          "id": "PLfalIYDZtGGDPEYdHVoI0UY9py6gAibMU",
+          "show": "WWF Golden Era"
+        },
+        {
+          "id": "PLfalIYDZtGGBvsb74mJvNf-_pcAxCUJ7f",
+          "show": "WWF Golden Era"
+        },
+        {
+          "id": "PLfalIYDZtGGANKw9O9HcR6E5nGbmaGNK5",
+          "show": "Wrestling at The Omni"
+        },
+        {
+          "id": "PLS9U3H1hd2sw",
+          "show": "WWF at Madison Square Garden"
+        },
+        {
+          "id": "PLppvcOyXyg7iF5cNOMMyUOWhr1AznyuWX",
+          "show": "AWA"
+        },
+        {
+          "id": "PLFxfBoZgFZVJ_LteBuVw8Yin9Tg8NYTH1",
+          "show": "80s Wrestling"
+        },
+        {
+          "id": "PL-IO2-AlyIzbUj8j21-9FmRXbjiyrlU8a",
+          "show": "NWA/WCW"
+        }
+      ],
+      "minMinutes": 20,
+      "maxMinutes": 300,
+      "skip": "deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupe": true,
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "order": "grouped",
+      "groupOrder": "date"
+    },
+    {
+      "number": 401,
+      "name": "WWE Vault Events",
+      "type": "youtube",
+      "rating": "TV-PG",
+      "description": "Full-length events and classic home videos from WWE's official Vault channel.",
+      "playlists": [
+        {
+          "id": "PLfalIYDZtGGDBmKl0slVTSSHEbbi1iTRu",
+          "show": "WWE Vault Event"
+        },
+        {
+          "id": "PLfalIYDZtGGCBhXhODKlrzKr7WGtFq1Ew",
+          "show": "WWE Home Video"
+        }
+      ],
+      "minMinutes": 30,
+      "maxMinutes": 400,
+      "skip": "deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupeAgainst": [
+        400
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "order": "grouped",
+      "groupOrder": "date"
+    },
+    {
+      "number": 402,
+      "name": "WWE Vault Stories",
+      "type": "youtube",
+      "rating": "TV-PG",
+      "description": "Documentaries, WWE Story Of, Untold, Retrospectives and Table For 3 from WWE's official Vault channel.",
+      "playlists": [
+        {
+          "id": "PLfalIYDZtGGBIriKyWF1urGQ0PkCm6pKl",
+          "show": "WWE Story Of"
+        },
+        {
+          "id": "PLfalIYDZtGGDiLqelYz_jJTuTHVjLdfZ7",
+          "show": "WWE Documentary"
+        },
+        {
+          "id": "PLfalIYDZtGGDKtDwmVj6FI7yCkLp1FGTa",
+          "show": "Attitude Era Documentary"
+        },
+        {
+          "id": "PLfalIYDZtGGDQQ2M_VA6PzUO67npSzmqR",
+          "show": "Stories of The Attitude Era"
+        },
+        {
+          "id": "PLfalIYDZtGGDZj7xYHVBlM_J5g-LbJj5j",
+          "show": "WWE Untold"
+        },
+        {
+          "id": "PLfalIYDZtGGC9Y_xED65PWfOSf0W43mht",
+          "show": "WWE Retrospective"
+        },
+        {
+          "id": "PLfalIYDZtGGCJHbI4WR21dvQIb4YY7B5G",
+          "show": "Superstar Origin Stories"
+        },
+        {
+          "id": "PLfalIYDZtGGCaeml1aGuSOiKSiwU5FhTu",
+          "show": "Table For 3"
+        },
+        {
+          "id": "PLfalIYDZtGGDgCPIkRZkH-TUJFIp0AlDg",
+          "show": "Superstars Present"
+        },
+        {
+          "id": "PLfalIYDZtGGDe_5wHT2uxCu39vZh7b2xJ",
+          "show": "Story of The nWo"
+        },
+        {
+          "id": "PLfalIYDZtGGCf7_T8qa9hSfh2D3Q8fWOO",
+          "show": "WarGames: The Match Beyond"
+        }
+      ],
+      "minMinutes": 5,
+      "maxMinutes": 240,
+      "skip": "deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupeAgainst": [
+        400,
+        401
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      }
+    },
+    {
+      "number": 403,
+      "name": "WWE Vault Matches",
+      "type": "youtube",
+      "rating": "TV-14",
+      "description": "Full matches from WWE's official Vault channel, every era. Nothing that's already on 400-402.",
+      "playlists": [
+        {
+          "id": "PLfalIYDZtGGBE0_RcI0mbcYLwyCVP6NeO",
+          "show": "Royal Rumble"
+        },
+        {
+          "id": "PLfalIYDZtGGAyVBBmy3I4b05j0w4T7HMd",
+          "show": "Elimination Chamber"
+        },
+        {
+          "id": "PLfalIYDZtGGCWkD4cJ0LvocSk8DT4D6QA",
+          "show": "Hell in a Cell"
+        },
+        {
+          "id": "PLfalIYDZtGGDLSMnhqhYlhFISPw6rCytd",
+          "show": "SummerSlam"
+        },
+        {
+          "id": "PLfalIYDZtGGCT9-YMonsLTaEeopIluQqC",
+          "show": "Money in the Bank"
+        },
+        {
+          "id": "PLfalIYDZtGGDU_8WA8VqsfrY4t36sL4QP",
+          "show": "Survivor Series"
+        },
+        {
+          "id": "PLfalIYDZtGGAAXJ-n5QRJDk2XzgJAhqBj",
+          "show": "Intercontinental Title"
+        },
+        {
+          "id": "PLfalIYDZtGGDF4wipKdzE-aKgTwK6MyBz",
+          "show": "Attitude Era"
+        },
+        {
+          "id": "PLfalIYDZtGGANiamRGDJnahiHFa1qXvA5",
+          "show": "New Generation Era"
+        },
+        {
+          "id": "PLfalIYDZtGGC5uGHfRQHELaAkZa_naY3_",
+          "show": "Tag Team Wrestling"
+        },
+        {
+          "id": "PLfalIYDZtGGCXePEjGbDLs9UIK_5zBKOi",
+          "show": "WWE Vault Match"
+        },
+        {
+          "id": "PLfalIYDZtGGDWBQoW7g4MJ5hiuyJ6-NdG",
+          "show": "WWE Vault Match"
+        }
+      ],
+      "minMinutes": 3,
+      "maxMinutes": 75,
+      "skip": "deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupeAgainst": [
+        400,
+        401,
+        402
+      ],
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "order": "grouped",
+      "groupBy": "event",
+      "groupOrder": "date"
+    },
+    {
+      "number": 404,
+      "name": "Indy Wrestling",
+      "type": "youtube",
+      "rating": "TV-14",
+      "description": "Full independent wrestling events and matches from the promotions' own YouTube channels (new uploads appear automatically). Now showing: Limitless Wrestling.",
+      "fromChannel": [
+        {
+          "handle": "LimitlessWrestling",
+          "skip": "shorts|music videos|best of|highlight|mini-docs|hype videos|the road|kitchen|top 5|top shelf|profiles|slo-mo|youtube exclusives|this week in|history|my first match|gems",
+          "show": "Limitless Wrestling",
+          "oldestFirst": true
+        }
+      ],
+      "minMinutes": 3,
+      "maxMinutes": 300,
+      "skip": "\\bmv\\b|music video|highlights|backstage|roundup|preview|recap|event center|calls out|proclaims|promo\\b|interview|press conference|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupe": true,
+      "order": "grouped",
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "groupBy": "playlist",
+      "groupOrder": "listed",
+      "historyOrder": "listed"
+    },
+    {
+      "number": 410,
+      "name": "NBA Finals",
+      "type": "youtube",
+      "rating": "TV-G",
+      "description": "Full NBA Finals games from the late '80s on: Jordan's Bulls, the Shaq and Kobe Lakers, Duncan's Spurs and more. The NBA's own Classic Games first, then fan uploads; duplicates removed.",
+      "playlists": [
+        {
+          "id": "PLlVlyGVtvuVniS7jx4DyESaKRUANIzyhE",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLhKhyXDlCnjDGA9SHVsWwYaigzAFHGXXI",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLMJRgdiTL3txV9r7b_Nk7PQ1TGCrU0_b0",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLtjs88_96K3lXOU4bjlRquLck_bDf0z1B",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLyHvTBYEuW412dCvZYqRaDwHrtHdQA4Sv",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLNbBj4TorBWerlzB1A5iM3XjwigqFG8sY",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PL1Df1EwEC7JsxUv0UuW_tvLieYMZUM0yD",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLAlP6adFZOwhN9G3yIPQ5wt0U03AEYkxQ",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeUlcWy8tA1iWKLnbnR1oV7f",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeVPcn4su_hPjmI5exaGqBE4",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeV_9XsMxT_Yk7T7JnvyR170",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeXnYUVVyAbN5QmtRzuaRzwU",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeUGEScZnE44UsA_MOn8SK_r",
+          "show": "NBA Finals",
+          "match": "finals"
+        }
+      ],
+      "minMinutes": 60,
+      "maxMinutes": 240,
+      "skip": "preview|reached the|mvp met|spiel|dsf|conference|semi.?finals?|conf\\.? finals|rematch|sends? .{0,40}finals|to (the )?(nba )?finals|\becf\b|\bwcf\b|eastern|western|east final|west final|highlights|mini.?movie|recap|wnba|g league|euroleague|ncaa|college|final four|olympic|fiba|2k\\d|\bpart \\d|\\(\\d+/\\d+\\)|19[4-7]\\d|198[0-6]|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupe": true,
+      "order": "grouped",
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "dedupeBy": [
+        "\\b((?:19|20)\\d\\d)\\b",
+        "\\b(?:game|gm|g)\\.?\\s*#?([1-7])\\b"
+      ],
+      "groupBy": [
+        "\\b((?:19|20)\\d\\d)\\b"
+      ],
+      "partBy": "\\b(?:game|gm|g)\\.?\\s*#?([1-7])\\b",
+      "groupOrder": "shuffle",
+      "historyOrder": "date"
+    }
+  ]
+}

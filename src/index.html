@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Retro TV</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="crt">
+  <div id="tv">
+    <div id="screen">
+      <video id="local" playsinline></video>
+      <div id="standby" hidden>
+        <div class="bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="card"><div class="big"></div><div class="small"></div></div>
+      </div>
+      <canvas id="static" width="200" height="150"></canvas>
+    </div>
+
+    <div id="guide" hidden>
+      <div class="guide-top">
+        <div class="guide-info">
+          <div class="guide-logo">TV<span>GUIDE</span></div>
+          <div class="guide-clock"></div>
+          <div class="guide-pick"></div>
+        </div>
+      </div>
+      <div class="guide-grid">
+        <div class="guide-head"></div>
+        <div class="guide-rows"></div>
+      </div>
+    </div>
+
+    <div id="banner"></div>
+    <div id="osd"><div class="ch"></div><div class="name"></div></div>
+    <div id="vol"></div>
+    <div id="help" hidden>
+      <h2>REMOTE</h2>
+      <dl>
+        <dt>&uarr; &darr; &nbsp;or mouse wheel</dt><dd>Channel up / down</dd>
+        <dt>0&ndash;9</dt><dd>Type a channel number</dd>
+        <dt>Backspace</dt><dd>Last channel</dd>
+        <dt>&larr; &rarr; &nbsp;or &minus; +</dt><dd>Volume</dd>
+        <dt>M</dt><dd>Mute</dd>
+        <dt>G</dt><dd>TV Guide</dd>
+        <dt>I</dt><dd>What's on</dd>
+        <dt>P</dt><dd>Press play (if a channel is stuck)</dd>
+        <dt>K</dt><dd>Who's watching (Kids / Family / Late Night)</dd>
+        <dt>O</dt><dd>Sports and wrestling: history order or random</dd>
+        <dt>L</dt><dd>Library: find, download, organize</dd>
+        <dt>C</dt><dd>Old TV look on / off</dd>
+        <dt>Ctrl+D</dt><dd>Move to the other screen</dd>
+        <dt>Ctrl+Q</dt><dd>Turn off</dd>
+      </dl>
+      <p>Press any key to close</p>
+    </div>
+    <div id="menu" hidden></div>
+
+    <div id="crt"></div>
+    <div id="power"><div class="line"></div></div>
+  </div>
+
+  <script src="schedule.js"></script>
+  <script src="profiles.js"></script>
+  <script src="isolate.js"></script>
+  <script src="effects.js"></script>
+  <script src="guide.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

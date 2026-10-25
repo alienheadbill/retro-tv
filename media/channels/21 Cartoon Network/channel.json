@@ -1,0 +1,39 @@
+{
+  "rating": "TV-Y7",
+  "description": "Cartoon Network, about 2001.",
+  "note": "Time blocks are an approximation of CN's 2001 lineup from well-known block names, not a verified historical listing. Toonami borrows its shows from channel 30.",
+  "blocks": [
+    {
+      "name": "Toonami",
+      "days": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri"
+      ],
+      "start": "17:00",
+      "end": "19:00",
+      "channel": 30
+    },
+    {
+      "name": "Cartoon Cartoon Fridays",
+      "days": [
+        "fri"
+      ],
+      "start": "19:00",
+      "end": "22:00",
+      "shows": [
+        "Dexter's Laboratory",
+        "Ed, Edd n Eddy",
+        "The Powerpuff Girls",
+        "Johnny Bravo",
+        "Courage the Cowardly Dog",
+        "Cow and Chicken",
+        "I Am Weasel",
+        "Sheep in the Big City",
+        "Time Squad"
+      ]
+    }
+  ]
+}

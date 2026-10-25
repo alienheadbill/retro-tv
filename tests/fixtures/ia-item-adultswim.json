@@ -1,0 +1,206 @@
+{
+ "metadata": {
+  "identifier": "zzAdultSwimBroadcasts",
+  "mediatype": "movies",
+  "description": "From all that I could find...\u00a0<div>Oh, and all credits goes to those who uploaded ...</div>",
+  "subject": [
+   "Adult Swim",
+   "Anime",
+   "Broadcast",
+   "Toonami"
+  ],
+  "title": "Old [AS] Broadcasts",
+  "collection": [
+   "anime_miscellaneous",
+   "anime"
+  ]
+ },
+ "files": [
+  {
+   "name": "Adult Swim 2004 11-20-04 (Fullmetal Alchemist, Ghost in the Shell, Inuyasha, Cowboy Bebop).mp4",
+   "source": "original",
+   "mtime": "1666076913",
+   "size": "722210335",
+   "md5": "9082afe329f2022936045f131deb7c73",
+   "crc32": "4d3463c4",
+   "sha1": "71242e4d5a39a2eab2c9c33a43758618b7865658",
+   "format": "MPEG4",
+   "length": "7384.89",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "Cartoon Network Adult Swim 2004-10-11.mp4",
+   "source": "original",
+   "mtime": "1666075176",
+   "size": "1747708063",
+   "md5": "2a385382f7a998e254b221c63049edec",
+   "crc32": "0897b2c1",
+   "sha1": "44d5646803891e473a53809735262333228e775f",
+   "format": "MPEG4",
+   "length": "17631.01",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "CodeGeassDeathNoteSamuraiJackMay 24,31, June 7, 14, 21.ia.mp4",
+   "source": "derivative",
+   "format": "h.264 IA",
+   "original": "CodeGeassDeathNoteSamuraiJackMay 24,31, June 7, 14, 21.mp4",
+   "mtime": "1666093078",
+   "size": "1013802043",
+   "md5": "e605e61d12b5d83e73edbf0c31e7a7ea",
+   "crc32": "dfcf143e",
+   "sha1": "b5fdd818128ba46ad24a9bd35a112cda7e4534fd",
+   "length": "21382.3",
+   "width": "320",
+   "height": "240"
+  },
+  {
+   "name": "CodeGeassDeathNoteSamuraiJackMay 24,31, June 7, 14, 21.mp4",
+   "source": "original",
+   "mtime": "1666086010",
+   "size": "1013802043",
+   "md5": "4ce1ef4c9708a4c71e0f9e1db7507c5d",
+   "crc32": "6ce0f413",
+   "sha1": "09d15a54d625150fcc219fe8041227785dd6d7a0",
+   "format": "MPEG4",
+   "length": "21382.3",
+   "width": "320",
+   "height": "240"
+  },
+  {
+   "name": "Inuyasha Tape 16 & ATHF.mp4",
+   "source": "original",
+   "mtime": "1666070563",
+   "size": "584423061",
+   "md5": "f92cf04dfdf0286e21be8b7a6136251a",
+   "crc32": "0cdf6f4c",
+   "sha1": "bec185c3c5d9f752570e1334807190a59bec9707",
+   "format": "MPEG4",
+   "length": "5956.46",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "[z303-as001] Adult Swim 12.26.04.mp4",
+   "source": "original",
+   "mtime": "1665991434",
+   "size": "1128747353",
+   "md5": "8c4eb5638e1877ea1a64b6f5b4ca4e71",
+   "crc32": "99e93a90",
+   "sha1": "39e94afc107eca1f5ef84014a82c905da7ccb748",
+   "format": "MPEG4",
+   "length": "10788.79",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "[z303-as056] Adult Swim 02.26.06.mp4",
+   "source": "original",
+   "mtime": "1665985000",
+   "size": "1502790544",
+   "md5": "1bdd413bb35d9f1ad0b2f9dd9d9e1cb2",
+   "crc32": "773c96f5",
+   "sha1": "cd14dbe31516a7930afef6e9c2b3be6a5942885b",
+   "format": "MPEG4",
+   "length": "14383.88",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "[z303-as065] Adult Swim 04.30.06.mp4",
+   "source": "original",
+   "mtime": "1665988670",
+   "size": "1504136635",
+   "md5": "3bb3226f7072dd3ce8954ac620b44797",
+   "crc32": "72586219",
+   "sha1": "8a10d0bb6d53fc802306b57ff94b15d40dac5b4f",
+   "format": "MPEG4",
+   "length": "14381.88",
+   "width": "640",
+   "height": "480"
+  },
+  {
+   "name": "__ia_thumb.jpg",
+   "source": "original",
+   "mtime": "1666093291",
+   "size": "9931",
+   "md5": "2e22d6951b7957ba7faa506b20af8b65",
+   "crc32": "5c549882",
+   "sha1": "3cee206d7a3dca30f5c197ebe10d34478164ebb1",
+   "format": "Item Tile",
+   "rotation": "0"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts_archive.torrent",
+   "source": "metadata",
+   "btih": "481c12acd026f4f92ecbbc09107da3dd480e47ee",
+   "mtime": "1681645210",
+   "size": "92049",
+   "md5": "794d7dda10755040b3b9a1f3a18d6d9b",
+   "crc32": "c00ece40",
+   "sha1": "55b99f306095ba1f116ec355efe3a5d04aebb981",
+   "format": "Archive BitTorrent"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts_files.xml",
+   "source": "original",
+   "format": "Metadata",
+   "md5": "1997af7490af71f027cc0119985dc459",
+   "summation": "md5"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts_meta.sqlite",
+   "source": "original",
+   "mtime": "1666086037",
+   "size": "36864",
+   "md5": "4166e8084d6065a0a6520dc85e9cd8ec",
+   "crc32": "02fc0772",
+   "sha1": "68ea032d33b6534b8dbef006ff8d3b1cedd5f11e",
+   "format": "Metadata"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts_meta.xml",
+   "source": "original",
+   "mtime": "1681645210",
+   "size": "903",
+   "md5": "eb518272869b6e5b7e682def2c13b3e4",
+   "crc32": "d9b30410",
+   "sha1": "5f121b4d80487c19e1c34a98df8467c8af004625",
+   "format": "Metadata"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts_reviews.xml",
+   "source": "original",
+   "mtime": "1703288230",
+   "size": "594",
+   "md5": "af2827d710deb1b50fa36726363ccaf0",
+   "crc32": "412dce5a",
+   "sha1": "01044228e339c0e8287a105d30d71f29a01cf864",
+   "format": "Metadata"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts.thumbs/Adult Swim 2004 11-20-04 (Fullmetal Alchemist, Ghost in the Shell, Inuyasha, Cowboy Bebop)_000001.jpg",
+   "source": "derivative",
+   "format": "Thumbnail",
+   "original": "Adult Swim 2004 11-20-04 (Fullmetal Alchemist, Ghost in the Shell, Inuyasha, Cowboy Bebop).mp4",
+   "mtime": "1666086192",
+   "size": "33767",
+   "md5": "16aa686947cbcff864d4d627e03bac7e",
+   "crc32": "90045b8b",
+   "sha1": "8cd01bd69cf83dede12349ecffdc167e7187482d"
+  },
+  {
+   "name": "zzAdultSwimBroadcasts.thumbs/Adult Swim 2004 11-20-04 (Fullmetal Alchemist, Ghost in the Shell, Inuyasha, Cowboy Bebop)_000512.jpg",
+   "source": "derivative",
+   "format": "Thumbnail",
+   "original": "Adult Swim 2004 11-20-04 (Fullmetal Alchemist, Ghost in the Shell, Inuyasha, Cowboy Bebop).mp4",
+   "mtime": "1666086212",
+   "size": "41322",
+   "md5": "513ac162f2c3b420f7c952a8109b0e38",
+   "crc32": "c5ec0dab",
+   "sha1": "28d5d0340964e9cd0ca05d3e029de4552e422198"
+  }
+ ]
+}
