@@ -66,7 +66,10 @@
         "locked": true
       }
     },
-    "profileSchedule": []
+    "profileSchedule": [],
+    "reports": {
+      "web3formsKey": "0a43286d-ae06-484b-9c5b-4ac91811b6f6"
+    }
   },
   "channels": [
     {
@@ -1468,6 +1471,33 @@
       "partBy": "\\b(?:game|gm|g)\\.?\\s*#?([1-7])\\b",
       "groupOrder": "shuffle",
       "historyOrder": "date"
+    },
+    {
+      "number": 420,
+      "name": "UFC",
+      "type": "youtube",
+      "rating": "TV-14",
+      "description": "Full fights from the UFC's official YouTube channel: title fights, classics, Contender Series contract winners and fighter marathons. New events' fights appear as they're posted.",
+      "show": "UFC",
+      "fromChannel": [
+        {
+          "handle": "ufc",
+          "show": "UFC",
+          "only": "\\bUFC\\b|Fight Night|Fight Island|CERTIFIED BANGERS|Contract Winner|Pride FC|Fight Flashback",
+          "skip": "embedded|power slap|zuffa|subtitles|ultimate fighter|glory days|on this day|muted",
+          "limit": 120
+        }
+      ],
+      "only": "full fight|free fight|^UFC Fight Flashback:",
+      "skip": "highlights|top 10|\\bshorts\\b|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "minMinutes": 3,
+      "maxMinutes": 200,
+      "dedupe": true,
+      "order": "shuffle",
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      }
     }
   ]
 }

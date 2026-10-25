@@ -75,6 +75,7 @@ document.querySelectorAll('nav button').forEach((b) =>
     if (b.dataset.tab === 'library' || b.dataset.tab === 'channels') refresh();
     if (b.dataset.tab === 'home') loadHome();
     if (b.dataset.tab === 'drives') loadDrives();
+    if (b.dataset.tab === 'health') loadHealth();
   })
 );
 
@@ -683,6 +684,71 @@ $('#new-channel').addEventListener('submit', async (e) => {
   }
 });
 
+// ---------- Channel health ----------
+
+let healthData = null;
+let healthProblemsOnly = false;
+
+async function loadHealth(action, arg) {
+  const r = await attempt(() => L.health(action || 'get', arg));
+  if (!r) return null;
+  healthData = r;
+  renderHealth();
+  return r;
+}
+
+const ago = (t) => {
+  if (!t) return '';
+  const s = Math.round((Date.now() - t) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return `${Math.round(s / 60)} min ago`;
+  if (s < 86400) return `${Math.round(s / 3600)} h ago`;
+  return new Date(t).toLocaleDateString();
+};
+const pill = (status) => h('span', { class: 'pill ' + (status || 'unverified') }, status || 'unverified');
+
+function renderHealth() {
+  const d = healthData;
+  if (!d) return;
+  // Worst of the two views decides whether it counts as a problem.
+  const bad = (c) => [c.check && c.check.status, c.playback && c.playback.status].some((s) => s === 'unavailable' || s === 'degraded');
+  const rows = d.channels.filter((c) => !healthProblemsOnly || bad(c));
+  const counts = {};
+  for (const c of d.channels) {
+    const s = (c.check && c.check.status) || 'unchecked';
+    counts[s] = (counts[s] || 0) + 1;
+  }
+  $('#health').replaceChildren(
+    h('div', { class: 'bar' },
+      h('button', { class: 'primary', disabled: d.checking, onclick: () => { toast('Checking every channel. This takes a minute.'); loadHealth('check').then((r) => r && toast('Checked.')); } }, d.checking ? 'Checking...' : 'Check all channels'),
+      h('label', { class: 'check' }, h('input', { type: 'checkbox', checked: healthProblemsOnly, onchange: (e) => { healthProblemsOnly = e.target.checked; renderHealth(); } }), 'Only problems'),
+      h('span', { class: 'muted' }, d.checkedAt ? `Checked ${ago(d.checkedAt)}: ${Object.entries(counts).map(([k, v]) => `${v} ${k}`).join(', ')}` : 'Not checked yet.'),
+      h('span', { class: 'muted' }, d.reportedAt ? `TV reported ${ago(d.reportedAt)}` : 'The TV reports here while it runs.')),
+    h('p', { class: 'muted' }, '"Right now" asks each service whether the channel is on the air. "On the TV" is how it has actually played. Unverified means it can\'t be checked from here (some players only show it by watching). When a video fails, the TV tries it again, then puts a stand-in in its time slot; the schedule itself never changes.'),
+    h('table', null,
+      h('thead', null, h('tr', null, ['Ch', 'Channel', 'Source', 'Right now', 'On the TV', 'If it fails', ''].map((t) => h('th', null, t)))),
+      h('tbody', null, rows.map((c) => {
+        const k = c.check;
+        const p = c.playback;
+        return h('tr', null,
+          h('td', { class: 'num' }, c.number),
+          h('td', null, c.name),
+          h('td', { class: 'muted' }, c.provider),
+          h('td', null, k ? [pill(k.status), ' ', k.note || '', k.temporary ? h('div', { class: 'temp' }, 'Should come back by itself') : null] : h('span', { class: 'muted' }, 'not checked')),
+          h('td', null, p ? [pill(p.status), p.lastOk ? h('div', { class: 'temp' }, `Last played ${ago(p.lastOk)}`) : null,
+            p.failing ? h('div', { class: 'err' }, `${p.failing} of ${p.sources.toLocaleString()} failing${p.lastError ? `: ${p.lastError}` : ''} (${ago(p.lastFail)})`) : null] : h('span', { class: 'muted' }, 'not watched yet')),
+          h('td', { class: 'muted' }, c.fallback),
+          h('td', null, h('button', { class: 'small', onclick: () => loadHealth('check-one', c.number).then((r) => r && toast(`Checked ${c.number} ${c.name}`)) }, 'Check again')));
+      }))),
+    d.aired.some((a) => a.standIn)
+      ? h('div', { class: 'panel' },
+          h('h3', null, 'Recent stand-ins'),
+          h('ul', null, d.aired.filter((a) => a.standIn).slice(-12).reverse().map((a) => h('li', null,
+            `${new Date(a.at).toLocaleString()} · ch ${a.ch}: "${a.aired}" stood in for "${a.scheduled}"${a.reason ? ` (${a.reason})` : ''}`))))
+      : null
+  );
+}
+
 // ---------- Your drives (folders used where they are) ----------
 
 let drives = null; // { linked, measuring, ffprobe }
@@ -956,6 +1022,9 @@ L.onEvent(({ type, data }) => {
     state.conversions.set(data.id, data);
     renderConversions();
     if (data.status === 'done') refresh();
+  } else if (type === 'health') {
+    healthData = data;
+    if ($('#tab-health').classList.contains('on')) renderHealth();
   } else if (type === 'linked') {
     if (drives) drives.measuring = data;
     if ($('#tab-drives').classList.contains('on') && !picked) {

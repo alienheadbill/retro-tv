@@ -12,4 +12,6 @@ contextBridge.exposeInMainWorld('tv', {
   // Keys pressed while a channel's page had focus.
   onKey: (cb) => ipcRenderer.on('tv:key', (_e, k) => cb(k)),
   quit: () => ipcRenderer.send('quit'),
+  // How the channels are playing, for the Library's Channel health tab.
+  reportHealth: (data) => ipcRenderer.send('tv:health', data),
 });

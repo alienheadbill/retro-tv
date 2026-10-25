@@ -24,5 +24,6 @@ contextBridge.exposeInMainWorld('library', {
   exportPhone: call('lib:export-phone'),
   home: call('lib:home'),
   linked: call('lib:linked'),
+  health: call('lib:health'),
   onEvent: (cb) => ipcRenderer.on('lib:event', (_e, msg) => cb(msg)),
 });

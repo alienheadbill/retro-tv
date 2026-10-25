@@ -33,7 +33,6 @@ const state = {
   durations: {},
   cycles: new Map(), // channel number -> schedule cycle
   probes: new Map(), // channel number -> promise
-  broken: new Set(), // file urls that wouldn't play
   status: new Map(), // channel number -> { online, title, gone } for Twitch and Owncast channels
 };
 
@@ -41,11 +40,61 @@ const hasStatus = (ch) => ch.type === 'owncast' || ch.type === 'twitch' || ch.ty
 
 let token = 0; // bumps on every tune, so stale callbacks know to give up
 let live = null; // { wv, ch, since, watch }
-let localNow = null; // current schedule position on a local channel
+let localNow = null; // current schedule position on a local channel: { ch, loc, file, sub, slotStart, slotEnd }
+
+// ---------- Playback health (src/health.js) ----------
+// How every source has behaved, kept between runs. A failed source rests before it's tried again,
+// and the schedule never changes because of it: its time slot gets a stand-in instead.
+
+const health = Health.monitor({ records: store.get('health', {}) });
+const keyOf = (f) => f.key || f.url;
+const kindOf = (f) => (f.youtube ? 'youtube' : f.stream || /^https?:/.test(f.url || '') ? 'remote' : 'file');
+// What actually aired (stand-ins included), newest last.
+const played = store.get('played', []);
+let lastLogged = '';
+
+function logAired(ch, scheduled, file, reason) {
+  const id = `${ch.number}|${keyOf(scheduled)}|${keyOf(file)}`;
+  if (id === lastLogged) return;
+  lastLogged = id;
+  played.push({ at: Date.now(), ch: ch.number, scheduled: scheduled.title, aired: file.title, standIn: file !== scheduled || undefined, reason: reason || undefined });
+  if (played.length > 200) played.splice(0, played.length - 200);
+  store.set('played', played);
+}
+
+function channelHealth(ch) {
+  if (ch.type === 'local') return health.channelStatus(ch.episodes.map(keyOf));
+  return health.status('live:' + ch.number);
+}
+
+// Saved and sent to the Library every few seconds, when something changed.
+setInterval(() => {
+  if (!health.takeChanged()) return;
+  store.set('health', health.all());
+  if (!tv.reportHealth) return;
+  tv.reportHealth({
+    at: Date.now(),
+    channels: state.all.map((ch) => {
+      const keys = ch.type === 'local' ? ch.episodes.map(keyOf) : ['live:' + ch.number];
+      const recs = keys.map((k) => health.get(k)).filter(Boolean);
+      const bad = recs.filter((r) => r.failures > 0);
+      return {
+        number: ch.number,
+        status: channelHealth(ch),
+        sources: keys.length,
+        failing: bad.length,
+        lastOk: Math.max(0, ...recs.map((r) => r.lastOk || 0)) || null,
+        lastFail: Math.max(0, ...recs.map((r) => r.lastFail || 0)) || null,
+        lastError: (bad.sort((a, b) => b.lastFail - a.lastFail)[0] || {}).lastError || null,
+      };
+    }),
+    aired: played.slice(-40),
+  });
+}, 5000);
 
 // ---------- Local files: durations and schedules ----------
 
-const durationOf = (f) => (state.broken.has(f.url) ? 0 : state.durations[f.key] || 0);
+const durationOf = (f) => state.durations[f.key] || 0;
 
 function probe(file) {
   return new Promise((resolve) => {
@@ -130,7 +179,12 @@ function toggleOrder() {
 }
 
 function listings(ch, from, to) {
-  if (ch.type === 'local') return Schedule.listings(cycleFor(ch), from, to).map((p) => ({ ...p, title: showLabel(p) }));
+  if (ch.type === 'local') {
+    const sub = localNow && localNow.ch.number === ch.number && localNow.sub ? localNow : null;
+    return Schedule.listings(cycleFor(ch), from, to).map((p) =>
+      sub && Math.abs(p.start - sub.slotStart) < 2000 ? { ...p, title: `${showLabel(sub.file)} (stand-in)`, substituted: true } : { ...p, title: showLabel(p) }
+    );
+  }
   if (!navigator.onLine) return [{ live: true, off: true, title: 'No signal: the internet is down', start: from, end: to }];
   const st = state.status.get(ch.number);
   const off = !!st && !st.online;
@@ -149,6 +203,7 @@ function teardown() {
     live = null;
   }
   clearTimeout(blockTimer);
+  clearTimeout(slotTimer);
   stopItem();
   localNow = null;
   standby(null);
@@ -161,7 +216,12 @@ function stopItem() {
     ytNow.wv.remove();
     ytNow = null;
   }
-  localVideo.onloadedmetadata = localVideo.onended = localVideo.onerror = null;
+  if (localPlay) {
+    clearTimeout(localPlay.loadTimer);
+    clearTimeout(localPlay.stallTimer);
+    localPlay = null;
+  }
+  localVideo.onloadedmetadata = localVideo.onended = localVideo.onerror = localVideo.onplaying = localVideo.onwaiting = null;
   localVideo.pause();
   localVideo.removeAttribute('src');
   localVideo.load();
@@ -262,10 +322,28 @@ function playLive(ch, t) {
       live.clicked = true;
       clickCenter(wv);
     }
+    // Players inside an iframe can't say whether they're playing: those stay "unverified".
+    if (s && s.playing && !live.ok) {
+      live.ok = true;
+      health.ok('live:' + ch.number, { loadMs: Date.now() - live.since, kind: ch.type });
+    }
     if (s && (s.playing || s.frame)) standby(null);
     else if (!navigator.onLine) noInternet();
     else if (st && !st.online) offAir(ch, st);
-    else if (Date.now() - live.since > 15000) standby('PLEASE STAND BY', `${ch.name} is having technical difficulties`);
+    else if (Date.now() - live.since > 15000) {
+      standby('PLEASE STAND BY', `${ch.name} is having technical difficulties`);
+      // One fresh start of the page, then it counts as a failure.
+      if (!live.reloaded && Date.now() - live.since > 30000) {
+        live.reloaded = true;
+        live.clicked = false;
+        try {
+          wv.reload();
+        } catch {}
+      } else if (live.reloaded && !live.failed && Date.now() - live.since > 60000) {
+        live.failed = true;
+        health.fail('live:' + ch.number, { reason: 'never started playing', kind: ch.type });
+      }
+    }
   }, 2000);
 
   if (hasStatus(ch)) {
@@ -311,39 +389,141 @@ async function playLocal(ch, t) {
 }
 
 let blockTimer = 0;
-function playLocalAt(ch, at, t) {
+let slotTimer = 0;
+let localPlay = null; // the file playing in the local player: { ...cur, loadTimer, stallTimer }
+
+// Plays what the schedule says is on at `at`. opts (from recovery): { file, offset } plays that
+// instead in this time slot; retries / altTried / tried count what's been attempted for it.
+function playLocalAt(ch, at, t, opts = {}) {
   clearTimeout(blockTimer);
+  clearTimeout(slotTimer);
   const cyc = cycleFor(ch);
   const loc = Schedule.locate(cyc, at);
   if (!loc) {
     standby('NO SIGNAL', "None of this channel's videos would play");
     return;
   }
-  localNow = { ch, loc, startedAt: Date.now() };
+  const scheduled = loc.item.file;
+  const slotStart = Math.round(at - loc.offset * 1000);
+  const slotEnd = slotStart + Math.round(loc.item.dur * 1000);
+  const cur = { ch, t, loc, scheduled, slotStart, slotEnd, retries: opts.retries || 0, altTried: opts.altTried || 0, tried: opts.tried || [], reason: opts.reason };
+  cur.file = opts.file || scheduled;
+  cur.offset = opts.file ? opts.offset || 0 : loc.offset;
+  // The scheduled source failed recently and is resting: go straight to a stand-in.
+  if (!opts.file && !opts.force && !health.usable(keyOf(scheduled))) {
+    const sub = standIn(cur, []);
+    if (!sub) return standbyUntil(cur);
+    cur.file = sub.file;
+    cur.offset = sub.offset;
+    cur.reason = 'scheduled video is unavailable';
+  }
+  localNow = { ch, loc, file: cur.file, sub: cur.file !== scheduled ? { original: scheduled } : null, slotStart, slotEnd, startedAt: Date.now() };
+  if (loc.item.kind === 'show') logAired(ch, scheduled, cur.file, cur.reason);
   // A time block starting (or ending) mid-show cuts over, like the real schedule did.
   const untilSwitch = loc.contextEnd - Date.now();
   if (untilSwitch < (loc.item.dur - loc.offset) * 1000 && untilSwitch < 2 ** 31 - 1) {
     blockTimer = setTimeout(() => t === token && playLocalAt(ch, Date.now() + 250, t), Math.max(0, untilSwitch) + 100);
   }
+  // A stand-in only fills its slot; then the schedule carries on as planned.
+  if (cur.file !== scheduled) slotTimer = setTimeout(() => t === token && playLocalAt(ch, Date.now() + 250, t), Math.max(0, slotEnd - Date.now()) + 100);
   stopItem();
-  if (loc.item.file.youtube) return playYouTubeItem(ch, loc, t);
-  const url = loc.item.file.url;
+  standby(null);
+  if (cur.file.youtube) return playYouTubeItem(cur);
+  playFile(cur);
+}
+
+// A stand-in for the slot: the same show first, then the channel's other programs of that kind
+// (episodes for episodes, ads for ads). It joins in progress if it's long enough, like the
+// scheduled one would have.
+function standIn(cur, exclude) {
+  const kind = cur.loc.item.kind;
+  const pool = (kind === 'bumper' ? cur.ch.bumpers : kind === 'commercial' ? cur.ch.commercials : cur.ch.episodes).map((f) => ({ ...f, dur: durationOf(f) }));
+  const pick = Health.substitute(cur.scheduled, pool, { usable: health.usable, seed: `${cur.ch.number}|${cur.slotStart}`, exclude: [...cur.tried, ...exclude] });
+  if (!pick) return null;
+  const file = (pick.key && pool.find((f) => f.key === pick.key)) || pick;
+  const elapsed = (Date.now() - cur.slotStart) / 1000;
+  return { file, offset: pick.dur > elapsed + 30 ? Math.max(0, elapsed) : 0 };
+}
+
+// Nothing left to play in this slot: a standby card until the next one.
+function standbyUntil(cur) {
+  localNow = { ch: cur.ch, loc: cur.loc, file: cur.scheduled, sub: null, slotStart: cur.slotStart, slotEnd: cur.slotEnd, startedAt: Date.now() };
+  stopItem();
+  standby('PLEASE STAND BY', "We'll be right back");
+  slotTimer = setTimeout(() => cur.t === token && playLocalAt(cur.ch, Date.now() + 250, cur.t), Math.max(0, cur.slotEnd - Date.now()) + 100);
+}
+
+// Something in a slot failed: try again, another copy of it, or a stand-in (see src/health.js).
+function recover(cur, reason, permanent = false) {
+  if (cur.t !== token || cur.done) return;
+  cur.done = true;
+  const { ch, t } = cur;
+  health.fail(keyOf(cur.file), { reason, permanent, kind: kindOf(cur.file) });
+  const isScheduled = cur.file === cur.scheduled;
+  const alternates = (cur.scheduled.alternates || []).length;
+  const step = isScheduled || cur.altTried ? Health.nextStep({ retries: cur.retries, permanent, alternates, alternatesTried: cur.altTried }) : 'substitute';
+  if (step === 'retry') return playLocalAt(ch, Date.now(), t, { retries: cur.retries + 1, force: true, reason });
+  if (step === 'alternate') {
+    return playLocalAt(ch, Date.now(), t, { file: cur.scheduled.alternates[cur.altTried], offset: (Date.now() - cur.slotStart) / 1000, altTried: cur.altTried + 1, retries: cur.retries, reason });
+  }
+  const sub = standIn(cur, [keyOf(cur.file)]);
+  if (!sub) return standbyUntil(cur);
+  playLocalAt(ch, Date.now(), t, { file: sub.file, offset: sub.offset, tried: [...cur.tried, keyOf(cur.file)], retries: 99, reason });
+}
+
+// Whatever was playing in the slot finished. A stand-in shorter than its slot hands over to
+// another one; otherwise the schedule moves on.
+function finished(cur) {
+  if (cur.t !== token || cur.done) return;
+  cur.done = true;
+  health.ok(keyOf(cur.file), { kind: kindOf(cur.file) });
+  if (cur.file !== cur.scheduled && Date.now() < cur.slotEnd - 3000) {
+    const sub = standIn(cur, [keyOf(cur.file)]);
+    if (!sub) return standbyUntil(cur);
+    return playLocalAt(cur.ch, Date.now(), cur.t, { file: sub.file, offset: 0, tried: [...cur.tried, keyOf(cur.file)], retries: 99, reason: cur.reason });
+  }
+  playLocalAt(cur.ch, Date.now() + 750, cur.t);
+}
+
+// A file (on this PC, a linked drive or another Retro TV) in the local player, watched for
+// errors, for not starting, and for stalling.
+function playFile(cur) {
+  const started = Date.now();
+  localPlay = cur;
+  let playing = false;
+  cur.loadTimer = setTimeout(() => !playing && recover(cur, 'took too long to start'), 25000);
   localVideo.onloadedmetadata = () => {
-    if (t !== token) return;
-    localVideo.currentTime = loc.offset;
+    if (cur.t !== token) return;
+    localVideo.currentTime = Math.min(cur.offset, Math.max(0, (localVideo.duration || Infinity) - 1));
     localVideo.play().catch(() => {});
   };
-  localVideo.onended = () => t === token && playLocalAt(ch, Date.now() + 750, t);
-  localVideo.onerror = () => {
-    if (t !== token) return;
-    state.broken.add(url);
-    state.cycles.delete(ch.number);
-    playLocalAt(ch, Date.now(), t);
+  localVideo.onplaying = () => {
+    if (cur.t !== token) return;
+    clearTimeout(cur.stallTimer);
+    if (playing) return;
+    playing = true;
+    clearTimeout(cur.loadTimer);
+    health.ok(keyOf(cur.file), { loadMs: Date.now() - started, kind: kindOf(cur.file) });
   };
-  localVideo.src = url;
+  localVideo.onwaiting = () => {
+    if (cur.t !== token || !playing) return;
+    clearTimeout(cur.stallTimer);
+    cur.stallTimer = setTimeout(() => {
+      health.stall(keyOf(cur.file));
+      recover(cur, 'stalled while playing');
+    }, 20000);
+  };
+  localVideo.onended = () => finished(cur);
+  localVideo.onerror = () => {
+    const code = localVideo.error && localVideo.error.code;
+    const local = /^file:/.test(cur.file.url || '');
+    // Couldn't decode, or a file on this computer that won't open: rest it for longer.
+    recover(cur, ['', 'stopped', 'network error', "couldn't decode", 'missing or unsupported'][code] || 'error', code === 3 || (code === 4 && local));
+  };
+  localVideo.src = cur.file.stream || cur.file.url;
   localVideo.classList.add('on');
   applyVolume();
-  if (loc.item.kind === 'show' && loc.offset < 2) setTimeout(() => t === token && showBanner(), 1000);
+  if (cur.loc.item.kind === 'show' && cur.offset < 2) setTimeout(() => cur.t === token && showBanner(), 1000);
 }
 
 // ---------- YouTube videos on scheduled channels ----------
@@ -351,11 +531,11 @@ function playLocalAt(ch, at, t) {
 // Plays one scheduled YouTube video in YouTube's own watch page, cropped to the video, starting
 // where the schedule says. Moves on when the video really ends (an ad first can delay it).
 let ytNow = null; // { wv, poll, ready }
-function playYouTubeItem(ch, loc, t) {
-  const file = loc.item.file;
+function playYouTubeItem(cur) {
+  const { ch, t, file } = cur;
   const wv = document.createElement('webview');
   wv.setAttribute('partition', 'persist:tv');
-  wv.setAttribute('src', `https://www.youtube.com/watch?v=${file.youtube}&t=${Math.floor(loc.offset)}s`);
+  wv.setAttribute('src', `https://www.youtube.com/watch?v=${file.youtube}&t=${Math.floor(cur.offset)}s`);
   const me = { wv, poll: 0, ready: false };
   wv.addEventListener('dom-ready', () => {
     if (t !== token || ytNow !== me) return;
@@ -369,15 +549,13 @@ function playYouTubeItem(ch, loc, t) {
   ytNow = me;
 
   const started = Date.now();
-  const expected = (loc.item.dur - loc.offset) * 1000;
+  const expected = ((file.dur || cur.loc.item.dur) - cur.offset) * 1000;
   let idleSince = 0;
-  const next = () => t === token && ytNow === me && playLocalAt(ch, Date.now() + 750, t);
-  const skip = () => {
-    if (t !== token || ytNow !== me) return;
-    state.broken.add(file.url);
-    state.cycles.delete(ch.number);
-    playLocalAt(ch, Date.now(), t);
-  };
+  let playing = false;
+  let lastT = -1;
+  let stuckSince = 0;
+  const next = () => ytNow === me && finished(cur);
+  const skip = (reason, permanent) => ytNow === me && recover(cur, reason, permanent);
   me.poll = setInterval(async () => {
     if (t !== token || ytNow !== me) return;
     let s = null;
@@ -391,11 +569,25 @@ function playYouTubeItem(ch, loc, t) {
       })()`);
     } catch {}
     const elapsed = Date.now() - started;
-    if (s && s.error) return skip(); // removed, private or blocked video
+    if (s && s.error) return skip('removed, private or blocked', true);
+    if (s && !s.paused && !s.ad && !playing) {
+      playing = true;
+      health.ok(keyOf(file), { loadMs: Date.now() - started, kind: 'youtube' });
+    }
+    // Playing but not moving (and not an ad): stuck buffering.
+    if (s && playing && !s.paused && !s.ad) {
+      if (s.t !== lastT) stuckSince = 0;
+      else if (!stuckSince) stuckSince = Date.now();
+      else if (Date.now() - stuckSince > 25000) {
+        health.stall(keyOf(file));
+        return skip('stalled while playing');
+      }
+      lastT = s.t;
+    }
     // A skippable ad: press Skip, as a person would (YouTube ignores scripted clicks on it).
     if (s && s.ad && s.skip) clickAt(wv, s.skip.x, s.skip.y);
     if (s && !s.ad && (s.ended || (s.d && s.t >= s.d - 1))) return next();
-    if (!s && elapsed > 30000) return skip();
+    if (!s && elapsed > 30000) return skip('the video never appeared');
     if (elapsed > expected + 10 * 60000) return next(); // never sit on a stuck page
     if (s && s.paused && !s.ad) {
       // "Are you still watching?" and friends: press play again.
@@ -407,7 +599,7 @@ function playYouTubeItem(ch, loc, t) {
     } else idleSince = 0;
     if (s && !s.paused) standby(null);
   }, 2000);
-  if (loc.item.kind === 'show' && loc.offset < 2) setTimeout(() => t === token && showBanner(), 1500);
+  if (cur.loc.item.kind === 'show' && cur.offset < 2) setTimeout(() => t === token && showBanner(), 1500);
 }
 
 // ---------- Sound ----------
@@ -478,9 +670,10 @@ function showBanner() {
     const lst = Schedule.listings(cycleFor(ch), now, now + 6 * 3600e3);
     const cur = lst[0];
     const nxt = lst[1];
-    const file = localNow.loc.item.file;
+    const file = localNow.file || localNow.loc.item.file;
     if (cur.block) netText += ` · ${cur.block}`;
     nowText = localNow.loc.item.kind === 'show' ? showLabel(cur) : `${showLabel(cur)} (commercial break)`;
+    if (localNow.sub && localNow.loc.item.kind === 'show') nowText = `${showLabel(file)} (standing in for ${showLabel(localNow.sub.original)})`;
     if (cur.broadcast) {
       const aired = file.airDate ? new Date(file.airDate + 'T12:00').toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' }) : file.year;
       nextText = ['Original broadcast', file.network, aired && `aired ${aired}`].filter(Boolean).join(' · ');

@@ -11,6 +11,7 @@ const { Converter } = require('./lib/convert');
 const { YouTubeChannels } = require('./lib/youtube-channels');
 const { HomeServer } = require('./lib/home-server');
 const funnel = require('./lib/funnel');
+const channelChecks = require('./lib/channel-checks');
 const { describe: describeFolder, showFor, LinkedProbes } = require('./lib/linked');
 const { safeName, isVideo, IMPORT_EXT } = require('./lib/paths');
 const sources = require('./lib/sources');
@@ -775,6 +776,77 @@ function freeNumbers(raw, howMany = 40) {
   for (let n = 25; n < 1000 && out.length < howMany; n++) if (!used.has(n) && !(n >= 70 && n <= 199)) out.push(n);
   return out;
 }
+
+// ---------- Channel health (Library tab) ----------
+// Two views of every channel: what its provider says right now (lib/channel-checks.js, on request),
+// and how it has actually been playing on the TV (src/health.js, reported by the TV window).
+
+let tvHealth = null;
+let lastChecks = { at: null, channels: {} };
+let checking = null;
+
+ipcMain.on('tv:health', (e, data) => {
+  if (!win || e.sender !== win.webContents) return;
+  tvHealth = data;
+  toManager('health', healthView());
+});
+
+const PROVIDERS = { web: 'Web page', owncast: 'Owncast', twitch: 'Twitch', vaughn: 'Vaughn', 'youtube-live': 'YouTube live', youtube: 'YouTube playlists', local: 'Your videos' };
+
+function healthView() {
+  const played = (tvHealth && tvHealth.channels) || [];
+  const channels = ((config && config.channels) || [])
+    .slice()
+    .sort((a, b) => a.number - b.number)
+    .map((ch) => {
+      const n = (ch.episodes || []).length;
+      const provider = ch.type === 'web' && channelChecks.plutoSlug(ch.url) ? 'Pluto TV' : ch.type === 'local' && ch.source === 'youtube' ? 'YouTube playlists' : PROVIDERS[ch.type] || ch.type;
+      return {
+        number: ch.number,
+        name: ch.name,
+        provider,
+        check: lastChecks.channels[ch.number] || null,
+        playback: played.find((p) => p.number === ch.number) || null,
+        fallback: ch.type === 'local' || ch.source === 'youtube' ? (n > 1 ? `${(n - 1).toLocaleString()} stand-ins` : 'Standby card') : ch.type === 'youtube-live' ? 'Finds the new stream' : 'Standby card',
+      };
+    });
+  return { checkedAt: lastChecks.at, checking: !!checking, reportedAt: tvHealth && tvHealth.at, channels, aired: (tvHealth && tvHealth.aired) || [] };
+}
+
+libHandle('lib:health', async (action, arg) => {
+  if (!config) config = await readConfig();
+  const chans = config.channels.map((c) => ({ ...c, type: c.source === 'youtube' ? 'youtube' : c.type }));
+  if (action === 'check') {
+    if (!checking) {
+      checking = channelChecks
+        .checkAll(chans)
+        .then((r) => (lastChecks = r))
+        .finally(() => {
+          checking = null;
+          toManager('health', healthView());
+        });
+    }
+    toManager('health', healthView());
+    await checking;
+  } else if (action === 'check-one') {
+    const ch = chans.find((c) => c.number === Number(arg));
+    if (ch && ch.type === 'youtube-live') {
+      // Look for the channel's current stream first (24/7 streams restart under new videos).
+      const hit = await youtube.refreshLive(ch).catch(() => null);
+      if (hit && hit.id && hit.id !== ch.videoId) {
+        ch.videoId = hit.id;
+        const real = config.channels.find((c) => c.number === ch.number);
+        if (real) real.videoId = hit.id;
+        notifyTv();
+      }
+    }
+    if (ch) {
+      const r = await channelChecks.checkAll([ch]);
+      lastChecks.channels[ch.number] = r.channels[ch.number];
+    }
+  }
+  return healthView();
+});
 
 libHandle('lib:linked', async (action, arg) => {
   if (action === 'pick') {

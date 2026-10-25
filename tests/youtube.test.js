@@ -47,3 +47,18 @@ test('dedupeBy treats the same year and game number as one video', () => {
   ];
   assert.deepEqual(dedupeBy(list, by).map((v) => v.title), [list[0].title, list[2].title, list[3].title, list[4].title]);
 });
+
+test('channel sources can take only some playlists, the newest few, and only some videos', () => {
+  const os = require('os');
+  const path = require('path');
+  const { YouTubeChannels } = require('../lib/youtube-channels');
+  const ytc = new YouTubeChannels(path.join(os.tmpdir(), `rtv-yt-${process.pid}.json`));
+  const vid = (id, title) => ({ id, title, dur: 900 });
+  ytc.cache.channels.ufc = { lists: [{ id: 'PLa', title: 'UFC 331: Van vs Pantoja' }, { id: 'PLb', title: 'UFC 330 Embedded' }, { id: 'PLc', title: 'UFC 329: X vs Y' }, { id: 'PLd', title: 'Power Slap' }] };
+  ytc.cache.playlists.PLa = { id: 'PLa', title: 'a', items: [vid('v1', 'Van vs Pantoja 1 | FULL FIGHT'), vid('v2', 'Press Conference')] };
+  ytc.cache.playlists.PLc = { id: 'PLc', title: 'c', items: [vid('v3', 'X vs Y | FULL FIGHT')] };
+  const c = { number: 420, name: 'UFC', type: 'youtube', fromChannel: [{ handle: 'ufc', show: 'UFC', only: String.raw`\bUFC\b`, skip: 'embedded', limit: 1 }], only: 'full fight', minMinutes: 3 };
+  assert.deepEqual(ytc.channelLists(c).map((p) => p.id), ['PLa'], 'only UFC lists, not Embedded, newest one');
+  assert.deepEqual(ytc.scheduled(c, [], []).episodes.map((e) => e.youtube), ['v1'], 'only the full fight');
+  assert.deepEqual(ytc.channelLists({ ...c, fromChannel: [{ ...c.fromChannel[0], limit: 5 }] }).map((p) => p.id), ['PLa', 'PLc']);
+});

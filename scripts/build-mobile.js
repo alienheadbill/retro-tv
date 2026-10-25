@@ -15,7 +15,7 @@ fs.mkdirSync(path.join(OUT, 'icons'), { recursive: true });
 const copy = (from, to = path.basename(from)) => fs.copyFileSync(path.join(ROOT, from), path.join(OUT, to));
 
 // Shared with the desktop TV.
-for (const f of ['schedule.js', 'profiles.js', 'effects.js', 'guide.js']) copy('src/' + f);
+for (const f of ['schedule.js', 'health.js', 'profiles.js', 'effects.js', 'guide.js']) copy('src/' + f);
 copy('lib/meta.js');
 copy('lib/sources/archive-core.js');
 copy('src/fonts/VT323-Regular.ttf', 'fonts/VT323-Regular.ttf');
@@ -23,7 +23,7 @@ copy('src/fonts/VT323-Regular.ttf', 'fonts/VT323-Regular.ttf');
 fs.writeFileSync(path.join(OUT, 'style.css'), read('src/style.css').replace(/(\d)vmin\b/g, '$1cqmin').replace(/(\d)vh\b/g, '$1cqh').replace(/(\d)vw\b/g, '$1cqw'));
 
 // Phone-only files.
-for (const f of ['index.html', 'phone.css', 'db.js', 'phone-lib.js', 'tv.js', 'manage.js', 'update.js', 'manifest.webmanifest']) copy('mobile/' + f);
+for (const f of ['index.html', 'phone.css', 'db.js', 'phone-lib.js', 'tv.js', 'manage.js', 'update.js', 'report.js', 'manifest.webmanifest']) copy('mobile/' + f);
 for (const f of fs.readdirSync(path.join(ROOT, 'mobile', 'icons'))) copy('mobile/icons/' + f, 'icons/' + f);
 
 // Lineup and settings from the desktop config.
@@ -39,6 +39,8 @@ const settings = {
   profileSchedule: s.profileSchedule,
   // A Retro TV sharing its shows with everyone (Phone at home, passcode off): every visitor gets them.
   publicServer: s.publicServer || null,
+  // "Report a problem" (mobile/report.js): only the Web3Forms key, never the owner's address.
+  reports: s.reports && s.reports.web3formsKey ? { web3formsKey: s.reports.web3formsKey } : null,
 };
 const enabled = (cfg.channels || []).filter((c) => c.enabled !== false);
 const pick = (c) => ({ number: c.number, name: c.name, type: c.type, channel: c.channel, url: c.url, description: c.description, rating: c.rating });
@@ -87,10 +89,14 @@ async function youtubeChannels() {
   const ids = scheduled.flatMap((c) => [...c.episodes, ...c.bumpers, ...c.commercials].map((v) => v.id));
   const ok = await ytc.checkEmbeddable(ids);
   for (const c of scheduled) for (const k of ['episodes', 'bumpers', 'commercials']) c[k] = c[k].filter((v) => ok[v.id] !== false);
-  const lives = enabled.filter((c) => c.type === 'youtube-live').map((c) => {
+  const allLives = enabled.filter((c) => c.type === 'youtube-live').map((c) => {
     const l = ytc.live(c);
     return { number: l.number, name: l.name, type: 'youtube-live', channelId: l.channelId, videoId: l.videoId, description: l.description, rating: l.rating };
   });
+  // A stream whose owner turned embedding off plays only on the PC (it opens YouTube's own page).
+  const liveOk = await ytc.checkEmbeddable(allLives.map((l) => l.videoId).filter(Boolean));
+  const lives = allLives.filter((l) => !l.videoId || liveOk[l.videoId] !== false);
+  for (const l of allLives) if (!lives.includes(l)) desktopOnly.push({ number: l.number, name: l.name });
   return { scheduled, lives };
 }
 

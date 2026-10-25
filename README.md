@@ -47,8 +47,35 @@ Opens on your main monitor while the TV keeps playing.
   channels, import videos from anywhere on your PC (they're copied, the originals stay), compare
   versions side by side, and inspect quality with ffprobe.
 - **Channels**: add folder channels and set how each one plays.
+- **Channel health**: every channel's state, two ways. *Right now* asks each service whether the
+  channel is on the air (Pluto's current lineup, Owncast and Twitch status, whether a YouTube
+  live stream is still live and allows embedding, how many videos a scheduled channel has).
+  *On the TV* is how it has actually played: last success, failures and their reasons. Each is
+  **healthy**, **degraded**, **unavailable** or **unverified** (can't be checked from here, such
+  as a web player or Vaughn, which blocks automatic checks). "Off the air right now" is marked
+  as temporary. **Check again** re-checks one channel; for a YouTube live channel it first looks
+  for the channel's current stream. Checks only run when you ask.
+- **Your drives** and **Phone at home**: see [docs/LAPTOP-SETUP.md](docs/LAPTOP-SETUP.md).
 
 Changes show up on the TV within a second or two; no restart needed.
+
+### When something won't play
+
+The schedule never changes because a video failed. Instead, in that time slot the TV:
+
+1. tries the same video again once (a network hiccup, or a video that didn't start within 25
+   seconds or stopped buffering for 20),
+2. tries another copy of the same program, when one is known,
+3. plays a stand-in for the rest of the slot: an episode of the same show if there is one,
+   otherwise another program from the same channel (ads stand in for ads). The banner and
+   guide say "stand-in", and the Channel health tab lists recent stand-ins,
+4. shows PLEASE STAND BY until the next slot if nothing else will play.
+
+A video that failed rests before it's tried again (1 minute, then 2, 4, ... up to 6 hours; a
+YouTube video that was removed or made private rests 6 hours straight away), so the TV doesn't
+keep stumbling on it. One good play clears it. The PC TV and the phone use the same rules
+(`src/health.js`) and pick the same stand-in for the same slot. A live channel that never starts
+gets one fresh reload of its page before it counts as failed.
 
 ## Channels
 
@@ -265,5 +292,6 @@ videos or the PIN.
 ## For developers
 
 `npm test` runs the unit tests (paths, probe parsing, library, Internet Archive parsing against
-captured responses, downloads against a local server, schedule, profiles). `docs/REPORT.md` has
+captured responses, downloads against a local server, schedule, profiles, playback health and
+recovery, channel checks against fake provider answers, the home server, linked folders). `docs/REPORT.md` has
 the audit, the source research and the design.
