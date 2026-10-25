@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-10-24",
+    "title": "Faster channel surfing",
+    "changes": [
+      "Flicking through channels quickly only loads the one you stop on"
+    ]
+  },
+  {
+    "date": "2026-10-24",
     "title": "Turning the phone fixed",
     "changes": [
       "Flipping between sideways and upright keeps the picture the right size and in place",

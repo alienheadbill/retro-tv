@@ -735,7 +735,7 @@ function renderHealth() {
           h('td', null, c.name),
           h('td', { class: 'muted' }, c.provider),
           h('td', null, k ? [pill(k.status), ' ', k.note || '', k.temporary ? h('div', { class: 'temp' }, 'Should come back by itself') : null] : h('span', { class: 'muted' }, 'not checked')),
-          h('td', null, p ? [pill(p.status), p.lastOk ? h('div', { class: 'temp' }, `Last played ${ago(p.lastOk)}`) : null,
+          h('td', null, p ? [pill(p.status), p.lastOk ? h('div', { class: 'temp' }, `Last played ${ago(p.lastOk)}${p.startMs ? ` · starts in ~${(p.startMs / 1000).toFixed(1)} s` : ''}`) : null,
             p.failing ? h('div', { class: 'err' }, `${p.failing} of ${p.sources.toLocaleString()} failing${p.lastError ? `: ${p.lastError}` : ''} (${ago(p.lastFail)})`) : null] : h('span', { class: 'muted' }, 'not watched yet')),
           h('td', { class: 'muted' }, c.fallback),
           h('td', null, h('button', { class: 'small', onclick: () => loadHealth('check-one', c.number).then((r) => r && toast(`Checked ${c.number} ${c.name}`)) }, 'Check again')));

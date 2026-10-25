@@ -62,3 +62,16 @@ test('channel sources can take only some playlists, the newest few, and only som
   assert.deepEqual(ytc.scheduled(c, [], []).episodes.map((e) => e.youtube), ['v1'], 'only the full fight');
   assert.deepEqual(ytc.channelLists({ ...c, fromChannel: [{ ...c.fromChannel[0], limit: 5 }] }).map((p) => p.id), ['PLa', 'PLc']);
 });
+
+test('a live stream lookup is reused while it is recent, and looked up again once it is old', () => {
+  const os = require('os');
+  const path = require('path');
+  const { YouTubeChannels } = require('../lib/youtube-channels');
+  const ytc = new YouTubeChannels(path.join(os.tmpdir(), `rtv-yt-live-${process.pid}.json`));
+  const c = { channelId: 'UCx', match: 'full episodes' };
+  assert.equal(ytc.cachedLive(c), null, 'nothing looked up yet');
+  ytc.cache.lives['UCx|full episodes'] = { id: 'abc', title: 'Live', at: Date.now() - 5 * 60e3 };
+  assert.equal(ytc.cachedLive(c).id, 'abc', 'five minutes old: reused');
+  ytc.cache.lives['UCx|full episodes'].at = Date.now() - 25 * 60e3;
+  assert.equal(ytc.cachedLive(c), null, 'twenty-five minutes old: look again');
+});

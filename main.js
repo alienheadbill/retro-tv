@@ -442,7 +442,7 @@ ipcMain.handle('durations:set', (_e, data) => {
 const TWITCH_WEB_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
 
 // Is a live channel on the air, and what's it showing? { online, title, gone } or null if unknown.
-ipcMain.handle('channel:status', async (_e, number) => {
+ipcMain.handle('channel:status', async (_e, number, force) => {
   const ch = config.channels.find((c) => c.number === number);
   try {
     if (ch && ch.type === 'owncast') {
@@ -451,7 +451,9 @@ ipcMain.handle('channel:status', async (_e, number) => {
       return { online: !!s.online, title: s.streamTitle || '' };
     }
     if (ch && ch.type === 'youtube-live') {
-      const hit = await youtube.refreshLive(ch);
+      // The TV asks about every live channel each minute: answer from the cache (looked up within
+      // the last 20 minutes) unless the TV says the stream it had didn't work.
+      const hit = (!force && youtube.cachedLive(ch)) || (await youtube.refreshLive(ch));
       if (hit && hit.id) ch.videoId = hit.id;
       return { online: !!(hit && hit.id), title: (hit && hit.title) || '', videoId: (hit && hit.id) || null };
     }

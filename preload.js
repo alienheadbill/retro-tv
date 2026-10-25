@@ -4,7 +4,7 @@ contextBridge.exposeInMainWorld('tv', {
   config: () => ipcRenderer.invoke('config'),
   durations: () => ipcRenderer.invoke('durations:get'),
   saveDurations: (data) => ipcRenderer.invoke('durations:set', data),
-  status: (number) => ipcRenderer.invoke('channel:status', number),
+  status: (number, force) => ipcRenderer.invoke('channel:status', number, !!force),
   nextDisplay: () => ipcRenderer.send('display:next'),
   openLibrary: () => ipcRenderer.send('library:open'),
   // Called when the library changes (downloads finish, files get assigned to channels).

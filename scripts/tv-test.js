@@ -108,6 +108,31 @@ async function main() {
     await key('o');
     check('O on a channel without history order says so', /RANDOM/.test(await text('#osd')));
 
+    // Rapid surfing: five presses in half a second start one player (the channel it lands on),
+    // and the channels flicked past aren't counted as failures.
+    await sleep(3000);
+    await evaluate(`(() => {
+      window.__starts = 0;
+      document.querySelector('#local').addEventListener('loadstart', () => window.__starts++);
+      new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => n.tagName === 'WEBVIEW' && window.__starts++))).observe(document.querySelector('#screen'), { childList: true });
+      window.__failsBefore = Object.values(tvc.health.all()).reduce((n, r) => n + (r.failures || 0), 0);
+      window.__from = tvc.state.index;
+    })()`);
+    for (let i = 0; i < 5; i++) {
+      await key('ArrowUp');
+      await sleep(100);
+    }
+    await sleep(4000);
+    const surf = await evaluate(`({
+      starts: window.__starts,
+      moved: (tvc.state.index - window.__from + 5 * tvc.state.channels.length) % tvc.state.channels.length,
+      expected: 5 % tvc.state.channels.length,
+      playing: !!(tvc.localNow || tvc.liveOn),
+      newFails: Object.values(tvc.health.all()).reduce((n, r) => n + (r.failures || 0), 0) - window.__failsBefore,
+    })`);
+    check('five quick CH up presses start one player, on the right channel', surf.starts === 1 && surf.moved === surf.expected && surf.playing, `${surf.starts} started`);
+    check('the channels flicked past are not counted as failures', surf.newFails === 0, `${surf.newFails} new`);
+
     // Wait for the missing episode's slot, tuned to the channel.
     const until = await evaluate(`(() => {
       const ch = tvc.state.channels.find((c) => c.number === 20);

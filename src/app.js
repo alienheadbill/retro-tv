@@ -229,7 +229,7 @@ function playLive(ch, t) {
   if (!url) {
     // A YouTube stream we haven't found yet: look again, and tune in if it's on.
     tvc.offAir(ch, {});
-    tvc.refreshStatus(ch).then((st) => t === tvc.token && st && st.online && tvc.tune(tvc.state.index, { quiet: true }));
+    tvc.refreshStatus(ch, true).then((st) => t === tvc.token && st && st.online && tvc.tune(tvc.state.index, { quiet: true }));
     return;
   }
   const wv = document.createElement('webview');
@@ -283,6 +283,10 @@ function playLive(ch, t) {
       } else if (me.reloaded && !me.failed && Date.now() - me.since > 60000) {
         me.failed = true;
         health.fail('live:' + ch.number, { reason: 'never started playing', kind: ch.type });
+        // A 24/7 YouTube stream may have restarted under a new video: look it up afresh.
+        if (ch.type === 'youtube-live') {
+          tvc.refreshStatus(ch, true).then((st) => t === tvc.token && live === me && st && st.videoId && st.videoId !== url.split('v=')[1] && tvc.tune(tvc.state.index, { quiet: true }));
+        }
       }
     }
   }, 2000);
@@ -351,7 +355,7 @@ const tvc = TVCore.create({
   playLive,
   stopLive,
   hasStatus,
-  status: async (ch) => tv.status(ch.number),
+  status: async (ch, force) => tv.status(ch.number, force),
   applyVolume,
   showVolume,
   snowVolume: () => tvc.state.volume,

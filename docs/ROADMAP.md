@@ -71,14 +71,23 @@ what-aired log on the way. The Library has **Publish the website** (Phone at hom
 `npm run test:tv` drives the real PC TV hidden (15 checks with `--online`); the phone was checked
 end to end in a phone-sized browser with the same missing-episode scenario and its remote buttons.
 
-## Milestone 3: faster, steadier tuning
+## Milestone 3: faster, steadier tuning (done)
 
-- Use the health records before tuning: skip straight to a stand-in for a resting source
-  (done), and warm the next/previous channel's lightweight metadata only.
-- Live YouTube: refresh the stream ID in the background when a check finds it ended, so tuning
-  doesn't wait.
-- Audit for overlapping audio when surfing quickly between webview channels.
-- Tests for the tune token and cancellation paths.
+- **Surfing:** the channel number and static appear at once, but a channel's player only starts
+  after 0.35 seconds on it, which the static covers. Five quick presses start one player, not
+  five, and the channels flicked past aren't counted as failures. This is in `src/tv-core.js`, so
+  both TVs behave the same.
+- **Live YouTube lookups:** the TV checks every live channel's status each minute. YouTube live
+  channels used to fetch YouTube's page every time, which was 30 fetches a minute and enough to
+  trigger YouTube's unusual-traffic block. They now answer from a lookup made within the last
+  20 minutes, and look again only when it's older or the stream the TV had didn't work. In that
+  case the PC TV retunes to the new stream.
+- **Start times:** each source's start time feeds a typical start time per channel, shown in
+  Channel health ("starts in ~1.2 s").
+- **Tests:** `npm run test:tv` checks rapid surfing (one player started, no false failures). A
+  unit test covers the live lookup cache. The phone was checked the same way in a browser.
+- **Still open:** warming the next channel ahead of time. It isn't needed for scheduled channels,
+  which are measured in the background, and live sites are too heavy to preload.
 
 ## Milestone 4: episode catalog (Phase 2)
 
