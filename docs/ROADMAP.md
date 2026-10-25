@@ -45,7 +45,7 @@ Needs checking by hand (it can't run in this environment):
   The phone app was checked end to end in a browser.
 - The Library's Channel health tab inside the real app. Its layout was checked with sample data.
 
-## Milestone 2: one TV for the PC and the phone
+## Milestone 2: one TV for the PC and the phone (done)
 
 The phone app already shares the PC's channel list (`channels.json`, built in by
 `scripts/build-mobile.js`) and its schedule, health, profile and guide code. The two TV screens,
@@ -64,6 +64,12 @@ recovery or remote buttons is made twice.
 3. **Publishing from the Library.** An "Update the phone app" button, so a channel change on the
    PC reaches the phone in one click instead of a separate script.
 4. **Tests** that run the same channel and recovery scenarios through both players.
+
+Done (October 2026): `src/tv-core.js` holds all of the above. `src/app.js` (PC) and `mobile/tv.js`
+(phone) are now only their players and controls. The phone gained stall detection and the
+what-aired log on the way. The Library has **Publish the website** (Phone at home tab).
+`npm run test:tv` drives the real PC TV hidden (15 checks with `--online`); the phone was checked
+end to end in a phone-sized browser with the same missing-episode scenario and its remote buttons.
 
 ## Milestone 3: faster, steadier tuning
 

@@ -922,6 +922,28 @@ function sharePanel() {
   return box;
 }
 
+// The Retro TV website (the phone app everyone opens): publish this PC's lineup to it.
+function publishPanel() {
+  const title = h('input', { placeholder: "What's new, in a few words (optional)" });
+  const changes = h('textarea', { rows: 2, placeholder: 'One change per line (optional)' });
+  const go = async () => {
+    homeBusy = true;
+    renderHome();
+    toast('Publishing the website. This takes a minute or two.');
+    const notes = title.value.trim() ? [title.value.trim(), ...changes.value.split('\n')] : [];
+    const r = await loadHome('publish', notes);
+    homeBusy = false;
+    renderHome();
+    if (r) toast(r.built || 'Published');
+  };
+  return h('div', { class: 'panel' },
+    h('h3', null, 'The Retro TV website'),
+    h('p', { class: 'muted' }, 'Channel changes on this PC reach phones and iPads when the website is published. Phones pick up the new version the next time Retro TV is opened. A note here shows up in their What\'s New.'),
+    title,
+    changes,
+    h('div', { class: 'row' }, h('button', { class: 'primary', disabled: homeBusy, onclick: go }, homeBusy ? 'Working...' : 'Publish the website')));
+}
+
 function renderHome() {
   if (!home) return;
   const s = home;
@@ -994,6 +1016,8 @@ function renderHome() {
         h('button', { onclick: () => loadHome('refresh').then((r) => r && toast('Counted again')) }, 'Count again'),
         h('button', { disabled: homeBusy, onclick: build }, homeBusy ? 'Updating...' : 'Update phone app files')),
       h('p', { class: 'muted' }, s.appBuilt ? 'Update the phone app files after changing channels, so the phone gets the new lineup.' : "The phone app files haven't been built yet: press Update phone app files first.")),
+
+    publishPanel(),
 
     h('div', { class: 'panel' },
       h('h3', null, 'Connected phones'),

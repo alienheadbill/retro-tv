@@ -291,6 +291,18 @@ videos or the PIN.
 
 ## For developers
 
+The PC TV (`src/app.js`) and the phone TV (`mobile/tv.js`) are one TV: `src/tv-core.js` does the
+lineup, profiles, tuning, scheduled playback with recovery, the banner, OSD, guide data and ORDER,
+and each side only adds its own players and controls. A change to how the TV behaves is made once
+and reaches both; the phone app gets it when the website is published (Library, Phone at home,
+**Publish the website**, or `node scripts/deploy-mobile.js`).
+
+`npm run test:tv` runs the real PC TV hidden and muted, on throwaway test settings, and checks it
+through Chrome's DevTools protocol: tuning by number, the banner, mute, channel up and back, the
+guide, ORDER, a folder channel's files, and recovery from a missing episode (retry, stand-in,
+schedule unchanged). `npm run test:tv -- --online` also plays a real YouTube channel and a live
+stream. It needs FFmpeg for its two test videos.
+
 `npm test` runs the unit tests (paths, probe parsing, library, Internet Archive parsing against
 captured responses, downloads against a local server, schedule, profiles, playback health and
 recovery, channel checks against fake provider answers, the home server, linked folders). `docs/REPORT.md` has

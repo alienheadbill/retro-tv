@@ -15,7 +15,8 @@ fs.mkdirSync(path.join(OUT, 'icons'), { recursive: true });
 const copy = (from, to = path.basename(from)) => fs.copyFileSync(path.join(ROOT, from), path.join(OUT, to));
 
 // Shared with the desktop TV.
-for (const f of ['schedule.js', 'health.js', 'profiles.js', 'effects.js', 'guide.js']) copy('src/' + f);
+// The TV itself (tv-core.js) and its schedule, health, profile, effect and guide code.
+for (const f of ['schedule.js', 'health.js', 'profiles.js', 'effects.js', 'guide.js', 'tv-core.js']) copy('src/' + f);
 copy('lib/meta.js');
 copy('lib/sources/archive-core.js');
 copy('src/fonts/VT323-Regular.ttf', 'fonts/VT323-Regular.ttf');

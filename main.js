@@ -17,7 +17,11 @@ const { safeName, isVideo, IMPORT_EXT } = require('./lib/paths');
 const sources = require('./lib/sources');
 
 const ROOT = __dirname;
-const CONFIG_FILE = path.join(ROOT, 'channels.json');
+// RTV_CONFIG / RTV_USER_DATA / RTV_HIDDEN: used by scripts/tv-test.js to run a hidden TV on test
+// settings, without touching the real channels, health records or screen.
+const CONFIG_FILE = process.env.RTV_CONFIG ? path.resolve(process.env.RTV_CONFIG) : path.join(ROOT, 'channels.json');
+if (process.env.RTV_USER_DATA) app.setPath('userData', path.resolve(process.env.RTV_USER_DATA));
+const HIDDEN = !!process.env.RTV_HIDDEN;
 let MEDIA_DIR = path.join(ROOT, 'media');
 const LIVE_TYPES = new Set(['twitch', 'vaughn', 'owncast', 'web']);
 
@@ -329,7 +333,9 @@ async function createWindow() {
       webviewTag: true,
     },
   });
+  if (HIDDEN) win.webContents.setAudioMuted(true);
   win.once('ready-to-show', () => {
+    if (HIDDEN) return;
     win.show();
     placeOn(display);
   });
@@ -390,6 +396,7 @@ app.whenReady().then(() => {
 app.on('web-contents-created', (_e, contents) => {
   // No popups or new windows, ever: ad networks love them.
   contents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  if (HIDDEN) contents.setAudioMuted(true);
   contents.on('will-attach-webview', (_ev, prefs) => {
     delete prefs.preload;
     prefs.nodeIntegration = false;
@@ -516,9 +523,20 @@ function startHome() {
 // Rebuilds dist-mobile/ (the phone app files the home server hands out).
 let homeBuild = null;
 function buildPhoneApp() {
+  return runPhoneScript('build-mobile.js', []);
+}
+
+// Builds the phone app and publishes it to the website (scripts/deploy-mobile.js: needs git and
+// the GitHub sign-in this PC publishes with). notes: [title, ...changes] for What's New, optional.
+function publishPhoneApp(notes) {
+  const args = (Array.isArray(notes) ? notes : []).map((n) => String(n).trim()).filter(Boolean).slice(0, 10);
+  return runPhoneScript('deploy-mobile.js', args);
+}
+
+function runPhoneScript(script, args) {
   if (homeBuild) return homeBuild;
   homeBuild = new Promise((resolve, reject) => {
-    const child = spawn(process.execPath, [path.join(ROOT, 'scripts', 'build-mobile.js')], {
+    const child = spawn(process.execPath, [path.join(ROOT, 'scripts', script), ...args], {
       cwd: ROOT,
       env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
       windowsHide: true,
@@ -738,6 +756,7 @@ libHandle('lib:home', async (action, arg) => {
   else if (action === 'forget') home.forget(arg || null);
   else if (action === 'refresh') home.lineup(true);
   else if (action === 'build') return { built: await buildPhoneApp(), status: home.status() };
+  else if (action === 'publish') return { built: await publishPhoneApp(arg), status: home.status() };
   else if (action === 'status' && !home.cached) {
     try {
       home.lineup();
