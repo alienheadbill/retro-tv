@@ -1189,10 +1189,10 @@
     },
     {
       "number": 401,
-      "name": "WWE Vault Events",
+      "name": "WWE Full Events",
       "type": "youtube",
       "rating": "TV-PG",
-      "description": "Full-length events and classic home videos from WWE's official Vault channel.",
+      "description": "Full-length WWE events and classic home videos from WWE's official Vault channel, in the order they happened. ORDER switches to random.",
       "playlists": [
         {
           "id": "PLfalIYDZtGGDBmKl0slVTSSHEbbi1iTRu",
@@ -1282,10 +1282,10 @@
     },
     {
       "number": 403,
-      "name": "WWE Vault Matches",
+      "name": "WWE Matches",
       "type": "youtube",
       "rating": "TV-14",
-      "description": "Full matches from WWE's official Vault channel, every era. Nothing that's already on 400-402.",
+      "description": "Single matches from WWE's official Vault channel, every era, at random. Full events are on 401.",
       "playlists": [
         {
           "id": "PLfalIYDZtGGBE0_RcI0mbcYLwyCVP6NeO",
@@ -1348,16 +1348,14 @@
         "bumpers": 0,
         "commercials": 0
       },
-      "order": "grouped",
-      "groupBy": "event",
-      "groupOrder": "date"
+      "order": "shuffle"
     },
     {
       "number": 404,
-      "name": "Indy Wrestling",
+      "name": "Indy Full Events",
       "type": "youtube",
       "rating": "TV-14",
-      "description": "Full independent wrestling events and matches from the promotions' own YouTube channels (new uploads appear automatically). Now showing: Limitless Wrestling.",
+      "description": "Full independent wrestling shows from the promotions' own YouTube channels, oldest first (new shows appear automatically). Now showing: Limitless Wrestling. Single matches are on 405.",
       "fromChannel": [
         {
           "handle": "LimitlessWrestling",
@@ -1366,9 +1364,9 @@
           "oldestFirst": true
         }
       ],
-      "minMinutes": 3,
+      "minMinutes": 80,
       "maxMinutes": 300,
-      "skip": "\\bmv\\b|music video|highlights|backstage|roundup|preview|recap|event center|calls out|proclaims|promo\\b|interview|press conference|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "skip": "\\bmv\\b|music video|highlights|backstage|roundup|preview|recap|event center|calls out|proclaims|promo\\b|interview|press conference|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s|full match|tournament matches",
       "dedupe": true,
       "order": "grouped",
       "breaks": {
@@ -1380,11 +1378,36 @@
       "historyOrder": "listed"
     },
     {
+      "number": 405,
+      "name": "Indy Matches",
+      "type": "youtube",
+      "rating": "TV-14",
+      "description": "Single independent wrestling matches from the promotions' own YouTube channels, at random (new ones appear automatically). Now showing: Limitless Wrestling. Full shows are on 404.",
+      "fromChannel": [
+        {
+          "handle": "LimitlessWrestling",
+          "skip": "shorts|music videos|best of|highlight|mini-docs|hype videos|the road|kitchen|top 5|top shelf|profiles|slo-mo|youtube exclusives|this week in|history|my first match|gems",
+          "show": "Limitless Wrestling",
+          "oldestFirst": true
+        }
+      ],
+      "minMinutes": 4,
+      "maxMinutes": 75,
+      "skip": "\\bmv\\b|music video|highlights|backstage|roundup|preview|recap|event center|calls out|proclaims|promo\\b|interview|press conference|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s|full show|extended cut|\\bday \\d|full event|limitless wrestling tv",
+      "dedupe": true,
+      "order": "shuffle",
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      },
+      "only": "\\bvs?\\b|\\bv\\.|match|rumble|battle royal|gauntlet|scramble"
+    },
+    {
       "number": 410,
-      "name": "NBA Finals",
+      "name": "NBA Finals in Order",
       "type": "youtube",
       "rating": "TV-G",
-      "description": "Full NBA Finals games from the late '80s on: Jordan's Bulls, the Shaq and Kobe Lakers, Duncan's Spurs and more. The NBA's own Classic Games first, then fan uploads; duplicates removed.",
+      "description": "Every NBA Finals game we can find, from the late '80s on, in order: year by year, game by game. The NBA's own Classic Games first, then fan uploads; duplicates removed. ORDER switches to random series.",
       "playlists": [
         {
           "id": "PLlVlyGVtvuVniS7jx4DyESaKRUANIzyhE",
@@ -1454,7 +1477,7 @@
       ],
       "minMinutes": 60,
       "maxMinutes": 240,
-      "skip": "preview|reached the|mvp met|spiel|dsf|conference|semi.?finals?|conf\\.? finals|rematch|sends? .{0,40}finals|to (the )?(nba )?finals|\becf\b|\bwcf\b|eastern|western|east final|west final|highlights|mini.?movie|recap|wnba|g league|euroleague|ncaa|college|final four|olympic|fiba|2k\\d|\bpart \\d|\\(\\d+/\\d+\\)|19[4-7]\\d|198[0-6]|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "skip": "preview|reached the|mvp met|spiel|dsf|conference|semi.?finals?|conf\\.? finals|rematch|sends? .{0,40}finals|to (the )?(nba )?finals|\\becf\\b|\\bwcf\\b|eastern|western|east final|west final|highlights|mini.?movie|recap|wnba|g league|euroleague|ncaa|college|final four|olympic|fiba|2k\\d|\\bpart \\d|\\(\\d+/\\d+\\)|19[4-7]\\d|198[0-6]|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
       "dedupe": true,
       "order": "grouped",
       "breaks": {
@@ -1469,8 +1492,98 @@
         "\\b((?:19|20)\\d\\d)\\b"
       ],
       "partBy": "\\b(?:game|gm|g)\\.?\\s*#?([1-7])\\b",
-      "groupOrder": "shuffle",
+      "groupOrder": "date",
       "historyOrder": "date"
+    },
+    {
+      "number": 411,
+      "name": "NBA Classics",
+      "type": "youtube",
+      "rating": "TV-G",
+      "description": "Full NBA games at random: Finals games and players' greatest nights (Curry, Jordan's Double-Nickel, Kyrie's 57 and more) from the NBA's own Classic Games, plus the Finals games on 410.",
+      "playlists": [
+        {
+          "id": "PLlVlyGVtvuVniS7jx4DyESaKRUANIzyhE",
+          "show": "NBA Classic"
+        },
+        {
+          "id": "PLlVlyGVtvuVlhFfuSePtKSySrXW78mWXB",
+          "show": "NBA Classic"
+        },
+        {
+          "id": "PLhKhyXDlCnjDGA9SHVsWwYaigzAFHGXXI",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLMJRgdiTL3txV9r7b_Nk7PQ1TGCrU0_b0",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLtjs88_96K3lXOU4bjlRquLck_bDf0z1B",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLyHvTBYEuW412dCvZYqRaDwHrtHdQA4Sv",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLNbBj4TorBWerlzB1A5iM3XjwigqFG8sY",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PL1Df1EwEC7JsxUv0UuW_tvLieYMZUM0yD",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLAlP6adFZOwhN9G3yIPQ5wt0U03AEYkxQ",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeUlcWy8tA1iWKLnbnR1oV7f",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeVPcn4su_hPjmI5exaGqBE4",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeV_9XsMxT_Yk7T7JnvyR170",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeXnYUVVyAbN5QmtRzuaRzwU",
+          "show": "NBA Finals",
+          "match": "finals"
+        },
+        {
+          "id": "PLGh9iKMotdeUGEScZnE44UsA_MOn8SK_r",
+          "show": "NBA Finals",
+          "match": "finals"
+        }
+      ],
+      "minMinutes": 60,
+      "maxMinutes": 240,
+      "skip": "conference|semi.?finals?|conf\\.? finals|eastern|western|east final|west final|\\becf\\b|\\bwcf\\b|preview|spiel|dsf|highlights|mini.?movie|recap|wnba|g league|euroleague|ncaa|college|final four|olympic|fiba|2k\\d|\\bpart \\d|\\(\\d+/\\d+\\)|19[4-7]\\d|198[0-6]|timeline|all of .{0,40} games|deutsch|german|espa[nñ]ol|latino|fran[cç]ais|italiano|portugu[eê]s",
+      "dedupe": true,
+      "dedupeBy": [
+        "\\b((?:19|20)\\d\\d)\\b",
+        "\\b(?:game|gm|g)\\.?\\s*#?([1-7])\\b"
+      ],
+      "order": "shuffle",
+      "breaks": {
+        "bumpers": 0,
+        "commercials": 0
+      }
     },
     {
       "number": 420,
