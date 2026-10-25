@@ -45,7 +45,27 @@ Needs checking by hand (it can't run in this environment):
   The phone app was checked end to end in a browser.
 - The Library's Channel health tab inside the real app. Its layout was checked with sample data.
 
-## Milestone 2: faster, steadier tuning
+## Milestone 2: one TV for the PC and the phone
+
+The phone app already shares the PC's channel list (`channels.json`, built in by
+`scripts/build-mobile.js`) and its schedule, health, profile and guide code. The two TV screens,
+`src/app.js` and `mobile/tv.js`, are still separate, so every change to tuning, the banner,
+recovery or remote buttons is made twice.
+
+1. **Shared core** (`src/tv-core.js`). It covers:
+   - channel state, tuning and surfing, profiles
+   - schedule playback and recovery, stand-ins and the what-aired log
+   - banner, OSD, guide data, ORDER, health reporting
+
+   Each step moves one area and is checked on both TVs before the next.
+2. **Two small players.** The PC player holds Electron webviews (Pluto, Vaughn, the YouTube watch
+   page), files and the keyboard. The web player holds iframes, the YouTube IFrame API,
+   on-device videos, PC-shared videos and touch.
+3. **Publishing from the Library.** An "Update the phone app" button, so a channel change on the
+   PC reaches the phone in one click instead of a separate script.
+4. **Tests** that run the same channel and recovery scenarios through both players.
+
+## Milestone 3: faster, steadier tuning
 
 - Use the health records before tuning: skip straight to a stand-in for a resting source
   (done), and warm the next/previous channel's lightweight metadata only.
@@ -54,7 +74,7 @@ Needs checking by hand (it can't run in this environment):
 - Audit for overlapping audio when surfing quickly between webview channels.
 - Tests for the tune token and cancellation paths.
 
-## Milestone 3: episode catalog (Phase 2)
+## Milestone 4: episode catalog (Phase 2)
 
 - Storage: evaluate Node's built-in `node:sqlite` against Electron 45's Node version. Fall back to
   the existing JSON index if it isn't available, rather than adding a native module.
@@ -69,7 +89,7 @@ Needs checking by hand (it can't run in this environment):
 - Missing and duplicate reports per show. Nothing is ever deleted automatically.
 - Feeds `alternates` into recovery.
 
-## Milestone 4: discovery (Phase 3)
+## Milestone 5: discovery (Phase 3)
 
 - A provider capability model (search, metadata, embed, download) over `lib/sources/`.
 - Broader Archive searches by year, network and kind, ranking full-length recordings over clips.
@@ -77,7 +97,7 @@ Needs checking by hand (it can't run in this environment):
 - "Channel needs more programming" suggestions from catalog gaps, which only report sources
   that actually answered.
 
-## Milestone 5: era mode (Phase 4)
+## Milestone 6: era mode (Phase 4)
 
 - A year selector (1980 to 2015 first). A per-network history table (launch and rebrand dates,
   blocks such as Toonami 1997–2008) sourced and cited, not guessed.
@@ -87,7 +107,7 @@ Needs checking by hand (it can't run in this environment):
 - Era simulation (a plausible lineup) and historical reconstruction (imported listings with
   provenance; unknowns marked as approximate) as two clearly labelled modes.
 
-## Milestone 6: presentation (Phase 5)
+## Milestone 7: presentation (Phase 5)
 
 - Break clips tagged by network, year range and kind. Schedule-aware selection with repeat
   avoidance. IDs at intervals.
@@ -95,7 +115,7 @@ Needs checking by hand (it can't run in this environment):
   phone video elements. Embedded web players can't be levelled; the app will say so.
 - Favorites, recent channels, per-channel history and rerun spacing.
 
-## Milestone 7: consistency (Phase 6)
+## Milestone 8: consistency (Phase 6)
 
 - The home server publishes the real schedule (`Schedule.listings`) and catalog metadata, so the
   phone never computes a different one.
