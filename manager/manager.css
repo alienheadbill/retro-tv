@@ -91,7 +91,7 @@ th { position: sticky; top: 0; background: var(--panel); text-align: left; font-
 th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
 tr.sel td { background: #2a2610; }
 tbody tr:hover td { background: var(--panel-2); cursor: pointer; }
-td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 td.name { max-width: 420px; word-break: break-word; }
 .files td { cursor: default; }
 .best td { box-shadow: inset 3px 0 0 var(--accent); }
@@ -173,5 +173,7 @@ td.name { max-width: 420px; word-break: break-word; }
 .ep { min-width: 26px; padding: 2px 5px; border-radius: 5px; font-size: 11px; text-align: center; font-variant-numeric: tabular-nums; cursor: default; }
 .ep.have { background: #10321f; color: var(--good); }
 .ep.two { background: #3b2f0a; color: var(--accent); }
+.ep.bc { background: #13283f; color: var(--info); }
+.bcasts li { margin: 6px 0; }
 .ep.miss { background: transparent; color: var(--muted); border: 1px dashed var(--line); }
 .health details summary { cursor: pointer; font-weight: 600; }

@@ -699,7 +699,51 @@ async function loadCatalog(action, arg) {
 }
 
 const epLabel = (e) => `S${String(e.season).padStart(2, '0')}E${String(e.number).padStart(2, '0')}`;
-const fileLine = (f) => [f.name, f.height ? `${f.height}p` : '', fmtBytes(f.size), fmtDur(f.dur)].filter(Boolean).join(' · ');
+// Where a copy came from: an Archive item, a linked drive, or the library.
+const sourceLabel = (s) => {
+  if (!s) return '';
+  if (s.kind === 'archive') return `from the Archive (${String(s.ref).replace(/^https?:\/\/(www\.)?archive\.org\/details\//, '')})`;
+  if (s.kind === 'drive') return `on ${s.ref}`;
+  return '';
+};
+const fileLine = (f) => [f.name, f.inBroadcast ? 'in a full broadcast' : '', f.height ? `${f.height}p` : '', fmtBytes(f.size), fmtDur(f.dur), sourceLabel(f.source)].filter(Boolean).join(' · ');
+
+// "S01E02, 1x05" -> [{ season: 1, episode: 2 }, { season: 1, episode: 5 }]
+const parseEpisodes = (text) => String(text).split(/[,;]+/).map((t) => /S?(\d{1,2})\s*[xE]\s*(\d{1,3})/i.exec(t.trim())).filter(Boolean).map((m) => ({ season: Number(m[1]), episode: Number(m[2]) }));
+
+// A complete broadcast, and what's in it (which counts toward each show's episodes).
+function broadcastItem(f) {
+  const has = f.contains || [];
+  const show = h('input', { placeholder: 'Show', value: has[0] ? has[0].show : '', style: 'width:180px' });
+  const eps = h('input', { placeholder: 'S01E02, S01E05', value: has.filter((c) => !has[0] || c.show === has[0].show).map((c) => epLabel({ season: c.season, number: c.episode })).join(', '), style: 'width:180px' });
+  const save = async () => {
+    const list = parseEpisodes(eps.value);
+    if (!show.value.trim() || !list.length) return toast('Fill in the show and its episodes, like S01E02, S01E05', true);
+    // Episodes of other shows already in it stay.
+    const others = has.filter((c) => c.show !== (has[0] && has[0].show));
+    await loadCatalog('set-file', { key: f.key, fix: { contains: [...others, ...list.map((x) => ({ show: show.value.trim(), ...x }))] } });
+    toast('Saved. Look again to update the list.');
+  };
+  return h('li', null, fileLine(f),
+    has.length ? h('div', { class: 'temp' }, 'Has: ' + has.map((c) => `${c.show} ${epLabel({ season: c.season, number: c.episode })}`).join(', ')) : null,
+    h('div', { class: 'row' }, h('span', { class: 'muted' }, "What's in it:"), show, eps, h('button', { class: 'small', onclick: save }, 'Save'),
+      has.length ? h('button', { class: 'small', onclick: async () => { await loadCatalog('set-file', { key: f.key, fix: null }); toast('Cleared. Look again to update the list.'); } }, 'Clear') : null));
+}
+
+// Commercials, bumpers, promos and IDs by network: what era-aware breaks will pick from.
+function clipsPanel(c) {
+  if (!c || !c.total) return null;
+  const kinds = ['commercial', 'bumper', 'promo', 'ID'];
+  return h('div', { class: 'panel' },
+    h('h3', null, `Commercials and bumpers (${c.total.toLocaleString()})`),
+    h('p', { class: 'muted' }, c.untagged ? `${c.untagged.toLocaleString()} have no network or year yet. Fill those in under My Library, so era breaks can pick the right ones.` : 'All of them have a network and year.'),
+    h('table', null,
+      h('thead', null, h('tr', null, h('th', null, 'Network'), h('th', null, 'Years'), kinds.map((k) => h('th', { class: 'num' }, k === 'ID' ? 'IDs' : k[0].toUpperCase() + k.slice(1) + 's')))),
+      h('tbody', null, c.networks.map((g) => h('tr', null,
+        h('td', null, g.network || h('span', { class: 'muted' }, 'No network')),
+        h('td', null, g.from ? (g.from === g.to ? String(g.from) : `${g.from}–${g.to}`) : ''),
+        ...kinds.map((k) => h('td', { class: 'num' }, g[k] ? String(g[k]) : '')))))));
+}
 
 function renderCatalog() {
   const box = $('#shows');
@@ -731,10 +775,11 @@ function renderCatalog() {
     head,
     intro,
     cat.shows.length
-      ? h('table', null, h('thead', null, h('tr', null, ['Show', 'Episodes you have', 'Missing', 'Twice', 'Not placed', ''].map((t) => h('th', null, t)))), h('tbody', null, rows))
+      ? h('table', null, h('thead', null, h('tr', null, ['Show', 'Episodes you have', 'Missing', 'Twice', 'Not placed', ''].map((t, i) => h('th', { class: i >= 1 && i <= 4 ? 'num' : null }, t)))), h('tbody', null, rows))
       : h('p', { class: 'muted' }, 'No show videos found in the library or linked drives yet.'),
     open ? showDetails(open) : null,
-    cat.broadcasts.length ? h('div', { class: 'panel' }, h('h3', null, `Complete broadcasts (${cat.broadcasts.length})`), h('p', { class: 'muted' }, 'Recordings of TV as it aired, kept apart from single episodes.'), h('ul', null, cat.broadcasts.map((f) => h('li', null, fileLine(f))))) : null,
+    cat.broadcasts.length ? h('div', { class: 'panel' }, h('h3', null, `Complete broadcasts (${cat.broadcasts.length})`), h('p', { class: 'muted' }, "Recordings of TV as it aired, kept apart from single episodes. Say which episodes one holds, and they count as ones you have."), h('ul', { class: 'bcasts' }, cat.broadcasts.slice(0, 200).map(broadcastItem))) : null,
+    clipsPanel(cat.clips),
     cat.unsorted.length ? h('div', { class: 'panel' }, h('h3', null, `Files with no show name (${cat.unsorted.length})`), h('p', { class: 'muted' }, 'Put them in a folder named after the show, or rename them like "Show Name S01E02".'), h('ul', null, cat.unsorted.slice(0, 200).map((f) => h('li', null, fileLine(f))))) : null,
   ].filter(Boolean));
 }
@@ -753,16 +798,19 @@ function showDetails(s) {
       h('div', { class: 'row' }, h('button', { class: 'small', onclick: async () => { await loadCatalog('set-show', { name: s.key, id: null }); toast('Saved: not on TVmaze.'); } }, "It's not on TVmaze")));
   };
   panel.append(h('div', { class: 'row' }, h('span', { class: 'muted' }, s.tvmaze ? `Matched to ${s.tvmaze.name} on TVmaze.` : 'Not matched.'), q, h('button', { class: 'small', onclick: search }, 'Find the right show')), found);
+  if (s.seasons.length) {
+    panel.append(h('div', { class: 'row temp' }, h('span', { class: 'ep have' }, '1'), 'you have it', h('span', { class: 'ep two' }, '1'), 'more than one copy (spares are backups if one won\'t play)', h('span', { class: 'ep bc' }, '1'), 'in a full broadcast', h('span', { class: 'ep miss' }, '1'), 'missing'));
+  }
 
   for (const season of s.seasons) {
     panel.append(h('div', null,
       h('b', null, `Season ${season.season}: ${season.have} of ${season.total}`),
-      h('div', { class: 'eps' }, season.episodes.map((e) => h('span', { class: 'ep ' + (e.files.length ? (e.files.length > 1 ? 'two' : 'have') : 'miss'), title: `${epLabel(e)} ${e.name}${e.airdate ? ` (${e.airdate})` : ''}${e.files.length ? `\n${e.files.map((f) => f.name).join('\n')}` : '\nMissing'}` }, String(e.number))))));
+      h('div', { class: 'eps' }, season.episodes.map((e) => h('span', { class: 'ep ' + (e.files.length ? (e.files.length > 1 ? 'two' : e.files[0].inBroadcast ? 'bc' : 'have') : 'miss'), title: `${epLabel(e)} ${e.name}${e.airdate ? ` (${e.airdate})` : ''}${e.files.length ? `\n${e.files.map(fileLine).join('\n')}` : '\nMissing'}` }, String(e.number))))));
   }
   const missing = s.seasons.flatMap((x) => x.episodes.filter((e) => !e.files.length));
   if (missing.length) panel.append(h('details', null, h('summary', null, `Missing episodes (${missing.length})`), h('ul', null, missing.map((e) => h('li', null, `${epLabel(e)} ${e.name}${e.airdate ? ` · aired ${e.airdate}` : ''}`)))));
   if (s.duplicates.length) {
-    panel.append(h('details', { open: true }, h('summary', null, `Episodes you have twice (${s.duplicates.length})`), h('p', { class: 'muted' }, 'Kept as they are: one may be an original broadcast and another a clean copy.'),
+    panel.append(h('details', { open: true }, h('summary', null, `Episodes you have twice (${s.duplicates.length})`), h('p', { class: 'muted' }, "Kept as they are: if one won't play, the TV plays another instead of a stand-in."),
       h('ul', null, s.duplicates.map((d) => h('li', null, `${epLabel(d)} ${d.name}`, h('ul', null, d.files.map((f) => h('li', { class: 'muted' }, fileLine(f)))))))));
   }
   if (s.unmatched.length) {
@@ -838,11 +886,11 @@ function renderHealth() {
           h('td', { class: 'muted' }, c.fallback),
           h('td', null, h('button', { class: 'small', onclick: () => loadHealth('check-one', c.number).then((r) => r && toast(`Checked ${c.number} ${c.name}`)) }, 'Check again')));
       }))),
-    d.aired.some((a) => a.standIn)
+    d.aired.some((a) => a.standIn || a.copy)
       ? h('div', { class: 'panel' },
-          h('h3', null, 'Recent stand-ins'),
-          h('ul', null, d.aired.filter((a) => a.standIn).slice(-12).reverse().map((a) => h('li', null,
-            `${new Date(a.at).toLocaleString()} · ch ${a.ch}: "${a.aired}" stood in for "${a.scheduled}"${a.reason ? ` (${a.reason})` : ''}`))))
+          h('h3', null, 'Recent stand-ins and backup copies'),
+          h('ul', null, d.aired.filter((a) => a.standIn || a.copy).slice(-12).reverse().map((a) => h('li', null,
+            `${new Date(a.at).toLocaleString()} · ch ${a.ch}: ${a.copy ? `another copy of "${a.scheduled}" played` : `"${a.aired}" stood in for "${a.scheduled}"`}${a.reason ? ` (${a.reason})` : ''}`))))
       : null
   );
 }

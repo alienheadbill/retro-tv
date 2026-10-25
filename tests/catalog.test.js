@@ -102,6 +102,69 @@ test('the catalog finds what you have, what is missing and what you have twice',
   assert.equal(ego.files[0].match.confidence, 'title');
 });
 
+test('copies of the same episode are found, offline and after a look-up', async () => {
+  const fake = fakeTvmaze();
+  const cat = new Catalog({ file: path.join(fake.dir, 'catalog.json'), tvmaze: fake.tvmaze });
+  const files = [
+    { key: 'a', name: 'D:/tv/Dexters.Laboratory.S01E02.mp4' },
+    { key: 'b', name: 'E:/old/Dexter Lab/1x02 Dee Dee and the Man.avi', show: 'Dexters Laboratory' },
+    { key: 'c', name: 'D:/tv/Dexters.Laboratory.S01E03.mp4' },
+    { key: 'd', name: 'D:/tv/Dexters Laboratory - Ego Trip.mp4' },
+    { key: 'e', name: 'D:/tv/Dexters.Laboratory.S02E03.mp4' },
+    { key: 'f', name: 'D:/rec/Cartoon Network - Full Broadcast - 2003.mp4' },
+    { key: 'g', name: 'D:/rec/Cartoon Network - Full Broadcast - 2003 (2).mp4' },
+  ];
+  // Offline, before any look-up: by show name, season and episode.
+  let copies = cat.copies(files);
+  assert.deepEqual(copies.get('a').map((f) => f.key), ['b']);
+  assert.deepEqual(copies.get('b').map((f) => f.key), ['a']);
+  assert.equal(copies.has('c'), false, 'only one copy of S01E03');
+  assert.equal(copies.has('d'), false, 'a title alone needs the episode list');
+  assert.equal(copies.has('f'), false, "broadcasts aren't episodes");
+
+  // After a look-up, the episode list places "Ego Trip" too, and it's remembered.
+  await cat.build(files);
+  const again = new Catalog({ file: path.join(fake.dir, 'catalog.json'), tvmaze: fake.tvmaze });
+  copies = again.copies(files);
+  assert.deepEqual(copies.get('d').map((f) => f.key), ['e'], 'Ego Trip is S02E03');
+  assert.equal(again.episodeId(files[0]), 'tv:1:1x2');
+
+  // "Not an episode" takes a file out; a correction moves it.
+  again.setFile('b', { ignore: true });
+  assert.equal(again.copies(files).has('a'), false);
+  again.setFile('c', { show: 'Dexters Laboratory', season: 1, episode: 2 });
+  assert.deepEqual(again.copies(files).get('a').map((f) => f.key), ['c']);
+});
+
+test('broadcasts can hold episodes, and break clips are counted by network', async () => {
+  const fake = fakeTvmaze();
+  const cat = new Catalog({ file: path.join(fake.dir, 'catalog.json'), tvmaze: fake.tvmaze });
+  const files = [
+    { key: 'a', name: 'Dexters.Laboratory.S01E01.mp4', source: { kind: 'archive', ref: 'https://archive.org/details/dexter-s1' } },
+    { key: 'g', name: 'Cartoon Network - Full Broadcast - 2003.mp4' },
+    { key: 'c1', name: 'CN Powerhouse bumper 2003.mp4', role: 'bumper', network: 'Cartoon Network', year: 2003 },
+    { key: 'c2', name: 'CN Toonami promo.mp4', role: 'bumper', network: 'Cartoon Network', year: 1999 },
+    { key: 'c3', name: 'Toy ad.mp4', role: 'commercial' },
+    { key: 'c4', name: 'CN station ID.mp4', role: 'bumper', network: 'Cartoon Network', year: 2001 },
+  ];
+  cat.setFile('g', { contains: [{ show: 'Dexters Laboratory', season: 1, episode: 2 }, { show: 'Dexters Laboratory', season: 2, episode: 1 }] });
+  const r = await cat.build(files);
+  const dex = r.shows[0];
+  assert.equal(dex.have, 3, 'S1E1, plus S1E2 and S2E1 in the broadcast');
+  const inB = dex.seasons[0].episodes[1].files[0];
+  assert.equal(inB.inBroadcast, true);
+  assert.equal(dex.seasons[0].episodes[0].files[0].source.kind, 'archive', 'where each copy came from');
+  assert.deepEqual(r.broadcasts.map((f) => [f.key, f.contains.length]), [['g', 2]]);
+  assert.equal(cat.episodeId(files[1]), null, "a broadcast isn't a backup copy of one episode");
+  assert.equal(cat.known.files.g, undefined);
+
+  assert.equal(r.clips.total, 4);
+  assert.equal(r.clips.untagged, 1);
+  const cn = r.clips.networks[0];
+  assert.deepEqual([cn.network, cn.bumper, cn.promo, cn.ID, cn.from, cn.to], ['Cartoon Network', 1, 1, 1, 1999, 2003]);
+  assert.deepEqual([r.clips.networks[1].network, r.clips.networks[1].commercial], [null, 1]);
+});
+
 test('corrections win, and TVmaze answers are kept', async () => {
   const fake = fakeTvmaze();
   const cat = new Catalog({ file: path.join(fake.dir, 'catalog.json'), tvmaze: fake.tvmaze });

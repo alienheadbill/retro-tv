@@ -35,6 +35,14 @@ async function main() {
   fs.mkdirSync(folder, { recursive: true });
   fs.copyFileSync(path.join(vids, 'Show 2.mp4'), path.join(folder, 'Bars 1.mp4'));
   fs.copyFileSync(path.join(vids, 'Show 1.mp4'), path.join(folder, 'Bars 2.mp4'));
+  // A show whose first episode will break, with another copy of it elsewhere in the library.
+  const copyShow = path.join(work, 'media', 'channels', '40 Copy Test', 'Test Pattern');
+  const backups = path.join(work, 'media', 'backups', 'Test Pattern');
+  fs.mkdirSync(copyShow, { recursive: true });
+  fs.mkdirSync(backups, { recursive: true });
+  fs.copyFileSync(path.join(vids, 'Show 2.mp4'), path.join(copyShow, 'Test Pattern S01E01.mp4'));
+  fs.copyFileSync(path.join(vids, 'Show 1.mp4'), path.join(copyShow, 'Test Pattern S01E02.mp4'));
+  fs.copyFileSync(path.join(vids, 'Show 2.mp4'), path.join(backups, 'Test Pattern 1x01.mp4'));
 
   // The "other computer": a home server whose lineup has one episode that isn't there.
   const v = (name, show) => ({ file: path.join(vids, name), title: name.replace(/\.mp4$/, ''), show, dur: 40 });
@@ -109,13 +117,17 @@ async function main() {
     check('O on a channel without history order says so', /RANDOM/.test(await text('#osd')));
 
     // Rapid surfing: five presses in half a second start one player (the channel it lands on),
-    // and the channels flicked past aren't counted as failures.
+    // and the channels flicked past aren't counted as failures. From 40 it never lands on 20, whose
+    // missing episode is checked below.
+    await evaluate(`tvc.tuneNumber(40)`);
     await sleep(3000);
     await evaluate(`(() => {
-      window.__starts = 0;
-      document.querySelector('#local').addEventListener('loadstart', () => window.__starts++);
-      new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => n.tagName === 'WEBVIEW' && window.__starts++))).observe(document.querySelector('#screen'), { childList: true });
-      window.__failsBefore = Object.values(tvc.health.all()).reduce((n, r) => n + (r.failures || 0), 0);
+      // What each player start played: a file's address, or a webview (YouTube and live sites).
+      window.__starts = [];
+      const v = document.querySelector('#local');
+      v.addEventListener('loadstart', () => window.__starts.push(v.currentSrc || v.src));
+      new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => n.tagName === 'WEBVIEW' && window.__starts.push('webview')))).observe(document.querySelector('#screen'), { childList: true });
+      window.__failsBefore = JSON.parse(JSON.stringify(tvc.health.all()));
       window.__from = tvc.state.index;
     })()`);
     for (let i = 0; i < 5; i++) {
@@ -123,14 +135,25 @@ async function main() {
       await sleep(100);
     }
     await sleep(4000);
+    // Only the channel it lands on may start (its schedule can move on to the next video meanwhile:
+    // the test videos are 40 s long).
     const surf = await evaluate(`({
-      starts: window.__starts,
+      starts: window.__starts.length,
+      elsewhere: (() => {
+        const ch = tvc.state.channels[tvc.state.index];
+        const own = new Set([...(ch.episodes || []), ...(ch.bumpers || []), ...(ch.commercials || [])].map((f) => new URL(f.stream || f.url, location.href).href));
+        return window.__starts.filter((s) => !own.has(s.split('#')[0])).length;
+      })(),
       moved: (tvc.state.index - window.__from + 5 * tvc.state.channels.length) % tvc.state.channels.length,
       expected: 5 % tvc.state.channels.length,
       playing: !!(tvc.localNow || tvc.liveOn),
-      newFails: Object.values(tvc.health.all()).reduce((n, r) => n + (r.failures || 0), 0) - window.__failsBefore,
+      // The channel it lands on really plays, so its failures (the missing episode) are real ones.
+      newFails: (() => {
+        const landed = new Set((tvc.state.channels[tvc.state.index].episodes || []).map(tvc.keyOf));
+        return Object.entries(tvc.health.all()).filter(([k]) => !landed.has(k)).reduce((n, [k, r]) => n + Math.max(0, (r.failures || 0) - ((window.__failsBefore[k] || {}).failures || 0)), 0);
+      })(),
     })`);
-    check('five quick CH up presses start one player, on the right channel', surf.starts === 1 && surf.moved === surf.expected && surf.playing, `${surf.starts} started`);
+    check('five quick CH up presses start only the channel they land on', surf.starts >= 1 && surf.elsewhere === 0 && surf.moved === surf.expected && surf.playing, `${surf.starts} started, ${surf.elsewhere} on channels flicked past`);
     check('the channels flicked past are not counted as failures', surf.newFails === 0, `${surf.newFails} new`);
 
     // Wait for the missing episode's slot, tuned to the channel.
@@ -142,7 +165,10 @@ async function main() {
     if (until == null) throw new Error('the missing episode is never scheduled');
     console.log(`     waiting ${Math.round(until / 1000)} s for the missing episode's slot...`);
     const before = await evaluate(`Schedule.listings(tvc.cycleFor(tvc.state.channels.find((c) => c.number === 20)), Date.now(), Date.now() + 400000).map((p) => [p.start, p.title])`);
-    await sleep(until + 4000);
+    // The TV starts on 20, so the episode may already have failed (and be resting): start clean.
+    await sleep(Math.max(0, until - 1000));
+    await evaluate(`tvc.health.ok(tvc.keyOf(tvc.state.channels.find((c) => c.number === 20).episodes.find((e) => e.title === 'Missing Episode')))`);
+    await sleep(5000);
     await evaluate(`tvc.tune(tvc.state.channels.findIndex((c) => c.number === 20), { quiet: true })`);
     await sleep(8000);
     const s = await evaluate(`(() => {
@@ -154,19 +180,59 @@ async function main() {
         playing: now && now.file.title,
         standingInFor: now && now.sub && now.sub.original.title,
         failures: (tvc.health.get(tvc.keyOf(miss)) || {}).failures,
+        record: tvc.health.get(tvc.keyOf(miss)),
+        log: tvc.played.slice(-4),
         videoTime: v.currentTime,
         videoPaused: v.paused,
         guideNow: tvc.listings(ch, Date.now(), Date.now() + 1)[0].title,
         aired: tvc.played.slice(-1)[0],
       };
     })()`);
-    check('the missing episode was tried twice (once more after the first failure)', s.failures === 2, `failures: ${s.failures}`);
+    check('the missing episode was tried twice (once more after the first failure)', s.failures === 2, s.failures === 2 ? 'failures: 2' : JSON.stringify({ record: s.record, log: s.log }));
     check('a stand-in from the same show is playing', s.standingInFor === 'Missing Episode' && s.playing === 'Show 1' && !s.videoPaused && s.videoTime > 0, `${s.playing}, ${s.videoTime.toFixed(1)} s in`);
     check('the guide marks it as a stand-in', /stand-in/.test(s.guideNow), s.guideNow);
     check('the stand-in is logged as what aired', !!(s.aired && s.aired.standIn && s.aired.scheduled === 'Missing Episode'));
     const after = await evaluate(`Schedule.listings(tvc.cycleFor(tvc.state.channels.find((c) => c.number === 20)), Date.now(), Date.now() + 200000).map((p) => [p.start, p.title])`);
     const same = after.filter((a) => a[0] > Date.now() + 1000).every((a) => before.some((b) => b[0] === a[0] && b[1] === a[1]));
     check("the rest of the schedule didn't move", same);
+
+    // Backup copies: S01E01 gets the library's other copy of it. The scheduled file then goes
+    // missing; when its slot comes, the TV plays the copy, not a stand-in.
+    const alts = await evaluate(`(tvc.state.channels.find((c) => c.number === 40).episodes.find((e) => e.title === 'Test Pattern S01E01').alternates || []).map((a) => a.title)`);
+    check('an episode gets its other copy from the library as a backup', alts.length === 1 && alts[0] === 'Test Pattern 1x01', alts.join(', ') || 'none');
+    // Both episodes measured (the TV does that in the background) before the file goes.
+    await waitFor(evaluate, `(() => {
+      const titles = Schedule.listings(tvc.cycleFor(tvc.state.channels.find((c) => c.number === 40)), Date.now(), Date.now() + 200000).map((p) => p.title);
+      return titles.includes('Test Pattern S01E01') && titles.includes('Test Pattern S01E02');
+    })()`, 30000);
+    fs.rmSync(path.join(copyShow, 'Test Pattern S01E01.mp4'), { maxRetries: 5 });
+    const untilCopy = await evaluate(`(() => {
+      const ch = tvc.state.channels.find((c) => c.number === 40);
+      const l = Schedule.listings(tvc.cycleFor(ch), Date.now(), Date.now() + 200000).find((p) => p.title === 'Test Pattern S01E01' && p.start > Date.now() + 2000);
+      return l ? l.start - Date.now() : null;
+    })()`);
+    if (untilCopy == null) throw new Error('S01E01 is never scheduled');
+    console.log(`     waiting ${Math.round(untilCopy / 1000)} s for the broken episode's slot...`);
+    await sleep(untilCopy + 4000);
+    await evaluate(`tvc.tuneNumber(40)`);
+    await sleep(8000);
+    const c = await evaluate(`(() => {
+      const ch = tvc.state.channels[tvc.state.index];
+      const ep = ch.episodes.find((e) => e.title === 'Test Pattern S01E01');
+      const now = tvc.localNow;
+      const v = document.querySelector('#local');
+      return {
+        ch: ch.number,
+        playing: now && now.file.title,
+        standIn: !!(now && now.sub),
+        failures: (tvc.health.get(tvc.keyOf(ep)) || {}).failures,
+        videoTime: v.currentTime,
+        guideNow: tvc.listings(ch, Date.now(), Date.now() + 1)[0].title,
+        aired: tvc.played.slice(-1)[0],
+      };
+    })()`);
+    check('the broken episode was tried, then its backup copy plays', c.ch === 40 && c.failures >= 1 && c.playing === 'Test Pattern 1x01' && c.videoTime > 0, `${c.playing}, failures ${c.failures}, ${(c.videoTime || 0).toFixed(1)} s in`);
+    check("a backup copy isn't called a stand-in", !c.standIn && !/stand-in/.test(c.guideNow) && !!(c.aired && c.aired.copy && !c.aired.standIn), c.guideNow);
 
     if (ONLINE) {
       // A scheduled YouTube channel: YouTube's watch page in a webview, playing where the schedule says.

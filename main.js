@@ -105,6 +105,7 @@ function addRemoteShows(channels, data, settings) {
       rating: v.rating || null,
       dur: v.dur || null,
       playable: true,
+      alternates: v.alternates ? files(v.alternates) : undefined,
     }));
   for (const p of data.channels) {
     if (!p.episodes || !p.episodes.length) continue;
@@ -201,6 +202,7 @@ function scanLocalChannels(settings) {
     })
     .filter(Boolean);
   addLinkedFolders(channels, settings, { sharedBumpers, sharedCommercials });
+  attachCopies(channels);
   return channels;
 }
 
@@ -284,26 +286,61 @@ function listVideos(folder, recurse = false, show = '') {
       continue;
     }
     if (!isVideo(e.name)) continue;
-    const st = fs.statSync(full);
-    const entry = library.get(library.rel(full)) || {};
-    const meta = entry.meta || {};
-    const probe = entry.probe || {};
-    out.push({
-      url: pathToFileURL(full).href,
-      key: `${full}|${st.size}|${Math.floor(st.mtimeMs)}`,
-      title: meta.title || prettify(e.name),
-      show: meta.show || show,
-      broadcast: !!meta.broadcast,
-      airDate: meta.airDate || null,
-      year: meta.year || null,
-      network: meta.network || null,
-      rating: meta.rating || null,
-      dur: probe.duration || null,
-      // Without ffprobe we can't tell; let the player try.
-      playable: probe.playable !== false || !probe.vcodec,
-    });
+    out.push(videoEntry(full, show));
   }
   return out;
+}
+
+function videoEntry(full, show = '') {
+  const st = fs.statSync(full);
+  const entry = library.get(library.rel(full)) || {};
+  const meta = entry.meta || {};
+  const probe = entry.probe || {};
+  return {
+    url: pathToFileURL(full).href,
+    key: `${full}|${st.size}|${Math.floor(st.mtimeMs)}`,
+    title: meta.title || prettify(path.basename(full)),
+    show: meta.show || show,
+    broadcast: !!meta.broadcast,
+    airDate: meta.airDate || null,
+    year: meta.year || null,
+    network: meta.network || null,
+    rating: meta.rating || null,
+    dur: probe.duration || null,
+    // Without ffprobe we can't tell; let the player try.
+    playable: probe.playable !== false || !probe.vcodec,
+  };
+}
+
+// Other copies of the same episode (anywhere in the library or on a linked drive, as the catalog
+// sees them) become each scheduled episode's backups: if one won't play, the TV tries the others
+// before a stand-in. The schedule itself doesn't change.
+function attachCopies(channels) {
+  if (!catalog) return;
+  const pathOf = (f) => (f.url && f.url.startsWith('file:') ? fileURLToPath(f.url) : null);
+  const all = new Map();
+  for (const ch of channels) {
+    for (const e of ch.episodes) {
+      const p = pathOf(e);
+      if (p && !all.has(p)) all.set(p, { key: p, name: p, show: e.show, file: e });
+    }
+  }
+  for (const e of library.list()) {
+    const m = e.meta || {};
+    if (e.missing || !isVideo(e.path) || m.role === 'bumper' || m.role === 'commercial') continue;
+    const p = path.join(MEDIA_DIR, e.path);
+    if (all.has(p) || !fs.existsSync(p)) continue;
+    const v = videoEntry(p);
+    if (v.playable) all.set(p, { key: p, name: p, show: v.show, file: v });
+  }
+  const copies = catalog.copies([...all.values()]);
+  if (!copies.size) return;
+  for (const ch of channels) {
+    ch.episodes = ch.episodes.map((e) => {
+      const others = copies.get(pathOf(e));
+      return others ? { ...e, alternates: others.map((o) => o.file) } : e;
+    });
+  }
 }
 
 function prettify(name) {
@@ -508,7 +545,12 @@ function homeLineup() {
   try {
     durations = JSON.parse(fs.readFileSync(durationsFile(), 'utf8'));
   } catch {}
-  const withFile = (f) => ({ ...f, file: fileURLToPath(f.url), dur: f.dur || durations[f.key] || null });
+  const withFile = (f) => ({
+    ...f,
+    file: fileURLToPath(f.url),
+    dur: f.dur || durations[f.key] || null,
+    alternates: f.alternates ? f.alternates.map(withFile) : undefined,
+  });
   return {
     channels: scanLocalChannels(settings).map((c) => ({
       ...c,
@@ -843,17 +885,27 @@ function healthView() {
 
 // ---------- Episode catalog (Library, Shows tab) ----------
 
-// Every show video: the library's files (not bumpers or commercials) and the linked drives'.
+// Every video: the library's files (shows, and bumpers and commercials as break clips) and the
+// linked drives', with where each came from.
 function catalogFiles() {
   const out = [];
   for (const e of library.list()) {
     const m = e.meta || {};
-    if (e.missing || !isVideo(e.path) || m.role === 'bumper' || m.role === 'commercial') continue;
-    out.push({ key: 'lib:' + e.path, name: e.path, show: m.show || '', size: e.size, dur: e.probe && e.probe.duration, height: e.probe && e.probe.height });
+    if (e.missing || !isVideo(e.path)) continue;
+    // Keyed by the file's full path, the same as the TV's backup copies (attachCopies).
+    const full = path.join(MEDIA_DIR, e.path);
+    out.push({
+      key: full, name: full, show: m.show || '', role: m.role === 'bumper' || m.role === 'commercial' ? m.role : 'show', network: m.network || null, year: m.year || null,
+      size: e.size, dur: e.probe && e.probe.duration, height: e.probe && e.probe.height,
+      source: m.sourceUrl ? { kind: 'archive', ref: m.sourceUrl } : { kind: 'library' },
+    });
   }
   for (const l of (readSettingsFile().settings || {}).linkedFolders || []) {
     if (!l || !fs.existsSync(l.path)) continue;
-    for (const v of linkedVideos(l)) out.push({ key: v.key, name: fileURLToPath(v.url), show: v.show || '', dur: v.dur || null });
+    for (const v of linkedVideos(l)) {
+      const full = fileURLToPath(v.url);
+      out.push({ key: full, name: full, show: v.show || '', role: 'show', dur: v.dur || null, source: { kind: 'drive', ref: l.name || l.path } });
+    }
   }
   return out;
 }

@@ -17,8 +17,9 @@ milestones in order. Each milestone is small, tested on its own, and leaves the 
 | YouTube playlists/channels as scheduled channels, live streams, framing crop, dedupe, English filter | Working, tested | `lib/youtube-channels.js`, `lib/framing.js` |
 | Linked folders on other drives, home server, internet sharing | Working, tested (not yet run on the laptop) | `lib/linked.js`, `lib/home-server.js`, `lib/funnel.js` |
 | Phone app sharing the same schedule, profiles and health code | Working | `mobile/`, `scripts/build-mobile.js` |
-| Episode catalog: have / missing / twice per show, from TVmaze, with corrections | New, tested (first slice) | `lib/catalog.js`, `lib/episode-match.js`, `lib/sources/tvmaze.js` |
-| Catalog sources, alternates for recovery, TMDB | Missing | |
+| **Episode catalog** (milestone 4, below): have / missing / twice per show from TVmaze, broadcasts, break clips, sources | **New, working, tested** | `lib/catalog.js`, `lib/episode-match.js`, `lib/sources/tvmaze.js` |
+| **Backup copies** of an episode used in recovery | **New, working, tested** | `main.js` (attachCopies), `src/tv-core.js` |
+| TMDB, historical airings | Missing | |
 | Era/year mode, historical schedules, provenance | Missing | |
 | Era-aware commercials and bumpers | Missing (breaks are random from a pool) | |
 | Playback loudness levelling | Only when converting a file | |
@@ -89,37 +90,45 @@ end to end in a phone-sized browser with the same missing-episode scenario and i
 - **Still open:** warming the next channel ahead of time. It isn't needed for scheduled channels,
   which are measured in the background, and live sites are too heavy to preload.
 
-## Milestone 4: episode catalog (Phase 2)
+## Milestone 4: episode catalog (done)
 
-**First slice done (October 2026).** `tests/catalog.test.js` covers the matcher and the
-have/missing/twice report against a stand-in TVmaze. The Shows tab was checked in a browser
-against the real TVmaze with sample file names (Dexter's Laboratory, Ed Edd n Eddy, Rugrats,
-Bakugan, a full broadcast, unknown files), including a "Not an episode" correction. It hasn't
-been run on the real library yet.
+Done (October 2026). It hasn't been run on the real library yet: open the Library's **Shows**
+tab and press "Look up my shows".
 
-- `lib/episode-match.js`: show, season, episode and title from file names, with confidence.
-- `lib/sources/tvmaze.js`: TVmaze search and episode lists, kept a week (a month for ended shows),
-  and paced requests.
-- `lib/catalog.js`: have, missing, twice and not placed per show, plus complete broadcasts and
-  files with no show name. Corrections are kept in `media/.retrotv/catalog.json`.
-- Library: a **Shows** tab with a per-season episode grid, missing and doubled-up lists,
-  "Find the right show", and "Put here" / "Not an episode" for files it couldn't place.
-- Storage stays JSON for now. Checking for `node:sqlite` in Electron 45 is still to do.
+- **Matching** (`lib/episode-match.js`): show, season, episode and title from file names
+  (`S02E04`, `2x04`, "Season 1 Episode 3", "Episode 12", the episode's title), with confidence.
+- **TVmaze** (`lib/sources/tvmaze.js`): show search and episode lists, kept a week (a month for
+  ended shows), with paced requests.
+- **Catalog** (`lib/catalog.js`): per show, the episodes you have, are missing, have more than
+  once, and files it couldn't place. Complete broadcasts are kept apart, and you can say which
+  episodes one holds (they then count as ones you have). Commercials, bumpers, promos and IDs
+  are counted by network and years, with how many still lack a network or year (milestones 6
+  and 7 need those). Each copy shows where it came from (an Archive item, a linked drive, the
+  library). Your corrections and the last look-up are kept in `media/.retrotv/catalog.json`.
+- **Backup copies in recovery:** every scheduled episode gets the other copies of it (from the
+  library and linked drives, as the catalog sees them; it works offline from file names before
+  any look-up). If the scheduled file won't play, the TV retries it once, then plays another copy
+  in the same slot, and only then a stand-in. A copy isn't called a stand-in in the guide, and
+  Channel health lists it under "Recent stand-ins and backup copies". The phone gets the copies
+  of PC-shared shows that it can play. The schedule itself doesn't change.
+- **Library:** the **Shows** tab, with a per-season episode grid, missing and doubled-up lists,
+  "Find the right show", "Put here" / "Not an episode", and "What's in it" for broadcasts.
+- **Storage:** Node's built-in SQLite (`node:sqlite`) works in Electron 45 (Node 24.22, SQLite
+  3.53), with no extra module. The catalog stays in JSON files for now (tens of thousands of short
+  entries even for a 3 TB library). SQLite is for when historical listings arrive (milestone 6).
+  The phone app can't use it either way.
+- **Tests:** `tests/catalog.test.js` (matching, have/missing/twice, copies offline and after a
+  look-up, broadcasts, clips, corrections), the home server's copies for the phone, and
+  `npm run test:tv`, where a deleted episode's other copy plays in its slot. The Shows tab was
+  checked in a browser against the real TVmaze with sample files.
 
-The plan:
+Left for later:
 
-- Storage: evaluate Node's built-in `node:sqlite` against Electron 45's Node version. Fall back to
-  the existing JSON index if it isn't available, rather than adding a native module.
-- Model: show, season, episode, special, broadcast recording, break clip (commercial, bumper,
-  ID, promo), file, source (local, linked drive, Archive item, YouTube video), channel link,
-  historical airing (with provenance). One episode can have many files and sources; one file
-  can hold many episodes (broadcasts).
-- Filename matcher: `S02E04`, `Season 1 Episode 3`, `2x04`, "Full Broadcast - 2003", with
-  confidence and manual correction. It only fills in what it can match.
-- TVmaze (free, no key) for show, season and episode lists, premiere dates and networks.
-  TMDB is optional, with the user's own key. Both are cached and rate-limited.
-- Missing and duplicate reports per show. Nothing is ever deleted automatically.
-- Feeds `alternates` into recovery.
+- **TMDB:** an optional second source, used with your own free key. TVmaze has covered every
+  show tried so far.
+- **Copies from the other computer:** shows streamed from the laptop (`publicServer`) don't yet
+  back up this PC's copies, or the other way around. On-device phone videos have no copies.
+- **Historical airings** (what aired when, with sources) arrive with era mode.
 
 ## Milestone 5: discovery (Phase 3)
 

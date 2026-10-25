@@ -23,7 +23,11 @@ async function setup() {
         number: 22,
         name: 'Cartoons',
         episodes: [
-          { file: video, title: 'Episode 1', show: 'Show', dur: 1320 },
+          {
+            file: video, title: 'Episode 1', show: 'Show', dur: 1320,
+            // Backup copies: the phone gets the ones it can play.
+            alternates: [{ file: path.join(dir, 'Episode 1 copy.mp4'), title: 'Episode 1 copy', dur: 1320 }, { file: path.join(dir, 'Episode 1.avi'), title: 'Episode 1', dur: 1320 }],
+          },
           { file: path.join(dir, 'Episode 2.avi'), title: 'Episode 2', dur: 1320 },
           { file: path.join(dir, 'Episode 3.mp4'), title: 'Episode 3', dur: null },
         ],
@@ -64,6 +68,8 @@ test('a phone pairs with the passcode, then gets the lineup and plays videos by 
     const eps = lineup.channels[0].episodes;
     assert.equal(eps.length, 1, 'only the playable, measured mp4');
     assert.equal(eps[0].title, 'Episode 1');
+    assert.deepEqual(eps[0].alternates.map((a) => a.title), ['Episode 1 copy'], 'backup copies the phone can play');
+    assert.ok(home.files.has(eps[0].alternates[0].id), 'and the server will hand it out');
     assert.ok(!JSON.stringify(lineup).includes(path.sep + 'Episode'), 'no file paths sent to the phone');
     assert.deepEqual(home.status().counts, { ready: 1, needsConvert: 1, unmeasured: 1 });
 
