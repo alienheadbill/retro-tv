@@ -1,6 +1,14 @@
 [
   {
     "date": "2026-10-25",
+    "title": "New sports channels",
+    "changes": [
+      "Full events and single matches now have their own channels: 401 WWE Full Events, 403 WWE Matches, 404 Indy Full Events, 405 Indy Matches",
+      "410 NBA Finals in Order plays every Finals game year by year; 411 NBA Classics plays random Finals games and players' best games"
+    ]
+  },
+  {
+    "date": "2026-10-25",
     "title": "Backup copies",
     "changes": [
       "If a show from your PC won't play and the PC has another copy of that episode, the TV plays the other copy instead of a stand-in"
