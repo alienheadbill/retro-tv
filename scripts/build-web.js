@@ -21,12 +21,12 @@ let page = fs.readFileSync(html, 'utf8');
 page = page.replace('</head>', '  <link rel="stylesheet" href="desktop.css">\n</head>');
 page = page.replace('</body>', '  <script src="desktop.js"></script>\n</body>');
 fs.writeFileSync(html, page);
-// Existing mobile service worker precache doesn't include the new desktop assets;
-// cache-bust the service-worker version to ensure updated shells after deployment.
+// Desktop assets participate in the service worker cache. Each deployment gets a fresh cache.
 const sw = path.join(out, 'sw.js');
 if (fs.existsSync(sw)) {
-  const text = fs.readFileSync(sw, 'utf8');
-  // Keep the service worker from serving an old cached HTML shell.
-  fs.writeFileSync(sw, text.replace(/(['"])\.\/index\.html\1/g, '$&'));
+  let serviceWorker = fs.readFileSync(sw, 'utf8');
+  serviceWorker = serviceWorker.replace(/const VERSION = '[^']*';/, `const VERSION = '${process.env.GITHUB_SHA || Date.now()}-desktop';`);
+  serviceWorker = serviceWorker.replace(/(const ASSETS = [^;]+;)/, "$1\nASSETS.push('./desktop.css', './desktop.js');");
+  fs.writeFileSync(sw, serviceWorker);
 }
 console.log('Built browser desktop application into dist-web');
