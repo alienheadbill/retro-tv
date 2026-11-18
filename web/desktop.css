@@ -1,0 +1,89 @@
+/* Desktop browser presentation of Retro TV's shared TV engine.
+   The core TV, guide, channel scheduler and media settings are unchanged. */
+@media (min-width: 900px) and (pointer: fine) {
+  html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden !important; }
+  body {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 284px;
+    grid-template-rows: 1fr;
+    gap: 20px;
+    padding: 34px 24px 18px;
+    background: radial-gradient(ellipse at 37% 30%, #242b33 0, #101216 63%, #070809 100%);
+    box-sizing: border-box;
+  }
+  body::before {
+    content: "RETRO TV   /   DESKTOP WEB";
+    position: fixed; z-index: 1; left: 26px; top: 9px;
+    font: 13px/18px monospace; letter-spacing: .18em; color: #b3a681;
+    pointer-events: none;
+  }
+  #set, body.tv-frame #set {
+    grid-column: 1;
+    grid-row: 1;
+    position: relative !important;
+    inset: auto !important;
+    align-self: center;
+    justify-self: center;
+    box-sizing: border-box;
+    width: min(100%, calc((100dvh - 90px) * 4 / 3)) !important;
+    height: auto !important;
+    max-height: calc(100dvh - 90px) !important;
+    aspect-ratio: 4 / 3 !important;
+    margin: 0 !important;
+    border-radius: 20px;
+  }
+  body:not(.tv-frame) #set { aspect-ratio: var(--tv-aspect, 4 / 3) !important; }
+  body.tv-frame { --bezel: 24px; }
+  body.tv-frame #tv {
+    inset: var(--bezel) !important; width: auto !important;
+    left: var(--bezel) !important; right: var(--bezel) !important;
+    top: var(--bezel) !important; bottom: var(--bezel) !important;
+    border-radius: 14px;
+  }
+  #remote, body.remote-up #remote, body.live-on #remote,
+  body.yt-tap #remote, body.yt-ad #remote {
+    grid-column: 2; grid-row: 1;
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    transform: none !important;
+    align-self: stretch;
+    width: 100% !important;
+    max-width: 284px;
+    height: auto;
+    max-height: calc(100dvh - 58px);
+    margin: 0 !important;
+    padding: 15px !important;
+    border: 1px solid #45413a;
+    border-radius: 18px !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    overflow: auto;
+    box-sizing: border-box;
+    background: linear-gradient(155deg, #323439, #1a1b1f);
+  }
+  #remote::before {
+    content: "REMOTE CONTROL";
+    font: 12px/18px monospace; letter-spacing: .14em;
+    color: #b7ae92; text-align: center; margin-bottom: 4px;
+  }
+  #remote .rows, body.live-on #remote .rows, body.yt-tap #remote .rows,
+  body.yt-ad #remote .rows { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; }
+  #remote .rows button, body.live-on #remote .rows button,
+  body.yt-tap #remote .rows button, body.yt-ad #remote .rows button {
+    display: block !important; font-size: 15px; min-height: 40px; padding: 8px 4px;
+  }
+  #remote .rows button[data-act="menu"] { grid-column: 1 / -1; }
+  #remote .rows button[data-act="pip"], #remote .rows button[data-act="cast"] { display: none !important; }
+  #remote .keypad, body.live-on #remote .keypad,
+  body.yt-tap #remote .keypad, body.yt-ad #remote .keypad {
+    display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px;
+  }
+  #remote .keypad button { font-size: 19px; min-height: 37px; }
+  #remote .keypad button.zero { grid-column: 2; }
+  #remote button:hover { filter: brightness(1.25); }
+  #manage { inset: 4% 5% !important; border: 1px solid #555; border-radius: 14px; box-shadow: 0 20px 80px #000; overflow: hidden; }
+  #manage .panes { max-width: 1200px; width: 100%; margin: 0 auto; }
+  #manage .pane { padding: 24px 32px; }
+}
