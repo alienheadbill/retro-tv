@@ -1,6 +1,6 @@
 /* Desktop browser presentation of Retro TV's shared TV engine.
    The core TV, guide, channel scheduler and media settings are unchanged. */
-@media (min-width: 900px) and (pointer: fine) {
+@media (min-width: 900px) {
   html, body { width: 100%; height: 100%; min-height: 100%; overflow: hidden !important; }
   body {
     display: grid !important;
@@ -17,7 +17,7 @@
     font: 13px/18px monospace; letter-spacing: .18em; color: #b3a681;
     pointer-events: none;
   }
-  #set, body.tv-frame #set {
+  #tv {
     grid-column: 1;
     grid-row: 1;
     position: relative !important;
@@ -32,13 +32,12 @@
     margin: 0 !important;
     border-radius: 20px;
   }
-  body:not(.tv-frame) #set { aspect-ratio: var(--tv-aspect, 4 / 3) !important; }
-  body.tv-frame { --bezel: 24px; }
+  body:not(.tv-frame) #tv { aspect-ratio: var(--tv-aspect, 4 / 3) !important; }
   body.tv-frame #tv {
-    inset: var(--bezel) !important; width: auto !important;
-    left: var(--bezel) !important; right: var(--bezel) !important;
-    top: var(--bezel) !important; bottom: var(--bezel) !important;
-    border-radius: 14px;
+    border: 22px solid #26221d;
+    outline: 3px solid #12100f;
+    background: #050505;
+    box-shadow: 0 16px 50px #000, inset 0 0 0 3px #39342e;
   }
   #remote, body.remote-up #remote, body.live-on #remote,
   body.yt-tap #remote, body.yt-ad #remote {
